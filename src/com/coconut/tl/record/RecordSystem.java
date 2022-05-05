@@ -3,18 +3,17 @@ package com.coconut.tl.record;
 import java.awt.event.KeyEvent;
 
 import com.coconut.tl.Main;
-import com.coconut.tl.asset.Asset;
+import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.input.MSInput;
-import dev.suback.marshmallow.object.MSObject;
 
 public class RecordSystem {
 
 	private boolean recording = true;
 	public boolean run = false;
-	private int maxRecordTime = 15;
+	private int maxRecordTime = 30;
 	private int timer = 0;
 
 	public boolean bundleSelected = false;
@@ -24,39 +23,50 @@ public class RecordSystem {
 	}
 
 	public void createPausedGame() {
-		for (int i = 0; i < Game.timelines.size(); i++) {
-			Game.timelines.get(i).replayObject = null;
+
+		for (int j = 0; j < Game.timelines.size(); j++) {
+			if (Game.timelines.get(j).ownerObject != null) {
+				Game.timelines.get(j).backPosition.SetTransform(Game.timelines.get(j).ownerObject.position.GetX(),
+						Game.timelines.get(j).ownerObject.position.GetY());
+			}
+			Game.timelines.get(j)._reset = false;
+			Game.timelines.get(j).ownerObject = null;
 		}
 
-		for (int i = 0; i < timer; i++) {
-//			System.out.println(Game.timelines.get(j).replayObject.position.GetY());
+		for (int i = 0; i < timer + 1; i++) {
+			for (int j = Game.timelines.size() - 1; j > -1; j--) {
 
-			for (int j = 0; j < Game.timelines.size(); j++) {
-				if (Game.timelines.get(j).replayObject == null && Game.timelines.get(j).getBundleByTime(i) != null) {
-					TimeNode _curNode = Game.timelines.get(j).getBundleByTime(i).getNodeByTime(i);
+				TimeBundle _bundle = Game.timelines.get(j).getBundleByTime(i);
+				if (_bundle != null) {
+					TimeNode _node = _bundle.getNodeByTime(i);
+					if (_node != null) {
+						if (!Game.timelines.get(j)._reset) {
+							Game.timelines.get(j)._reset = true;
+							if (!Game.timelines.get(j).getPlayerTimeLine()) {
+								Game.timelines.get(j).createOwnerObject();
+							} else {
+								Game.timelines.get(j).createPlayer();
+							}
+						} else {
 
-					Game.timelines.get(j).replayObject = new MSObject((int) _curNode.position.GetX(),
-							(int) _curNode.position.GetY(), Game.MS, Game.MS);
-					Game.timelines.get(j).replayObjectTargetPosition = Game.timelines.get(j).replayObject.position;
-					Game.timelines.get(j).replayObject.SetSprite(Asset.ROCK);
-				}
-
-				if (Game.timelines.get(j).replayObject != null && Game.timelines.get(j).getBundleByTime(i) != null) {
-
-					TimeNode _curNode = Game.timelines.get(j).getBundleByTime(i).getNodeByTime(i);
-					if (_curNode != null) {
-						if (_curNode.getDirection() == 0)
-							Game.timelines.get(j).replayObject.position.Translate(0, Game.MS);
-						else if (_curNode.getDirection() == 1)
-							Game.timelines.get(j).replayObject.position.Translate(-Game.MS, 0);
-						else if (_curNode.getDirection() == 2)
-							Game.timelines.get(j).replayObject.position.Translate(0, -Game.MS);
-						else
-							Game.timelines.get(j).replayObject.position.Translate(Game.MS, 0);
+							if (Game.timelines.get(j).ownerObject != null) {
+								if (_node.getDataType().equals("move")) {
+									// move
+									Game.timelines.get(j).ownerObject.turn();
+								}
+							}
+						}
 					}
 				}
-			}
 
+				if (Game.timelines.get(j).ownerObject != null) {
+					Game.timelines.get(j).ownerObject.position.SetTransform(Game.timelines.get(j).backPosition.GetX(),
+							Game.timelines.get(j).backPosition.GetY());
+					Game.timelines.get(j).replayObjectTargetPosition.SetTransform(
+							Game.timelines.get(j).ownerObject.position.GetX(),
+							Game.timelines.get(j).ownerObject.position.GetY());
+				}
+			}
 		}
 	}
 
@@ -76,7 +86,9 @@ public class RecordSystem {
 		}
 
 		if (MSInput.mouseCenter || MSInput.mouseLeft || MSInput.mouseRight) {
-			createPausedGame();
+			if (!run && !recording) {
+				createPausedGame();
+			}
 		}
 
 		if (MSInput.keys[KeyEvent.VK_SPACE] && Game.gameState == 1) {

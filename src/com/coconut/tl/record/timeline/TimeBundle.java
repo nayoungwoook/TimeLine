@@ -44,11 +44,11 @@ public class TimeBundle {
 			int len = nodes.size() - cutClickPos;
 
 			for (int i = 0; i < len - 1; i++) {
-				_subBundle.nodes.add(nodes.get(i + cutClickPos - 1));
+				_subBundle.nodes.add(nodes.get(i + cutClickPos + 1));
 			}
 
-			for (int i = 1; i < len; i++) {
-				nodes.remove(nodes.get(cutClickPos));
+			for (int i = 0; i < len - 1; i++) {
+				nodes.remove(nodes.get(cutClickPos + 1));
 			}
 		}
 
@@ -98,7 +98,7 @@ public class TimeBundle {
 			int xx = (startPosition + nodes.size() / 2) * TIME_NODE_SIZE + Game.MS / 2 * 3;
 			int yy = (MSDisplay.height - (Game.MS / 2 * 3)) - timeline.getLineIndex() * Game.MS;
 			if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 16 * 1 * nodes.size()) {
-				if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3) {
+				if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3 && !timeline.getPlayerTimeLine()) {
 					if (MSInput.mouseRight) {
 						cutBundle();
 					}
@@ -126,7 +126,7 @@ public class TimeBundle {
 				}
 			}
 
-			if (selected) {
+			if (selected && !timeline.getPlayerTimeLine()) {
 				if (!moveClickStarted)
 					moveClickStartPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;
 

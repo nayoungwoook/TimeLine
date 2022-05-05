@@ -2,7 +2,9 @@ package com.coconut.tl.record.timeline;
 
 import java.util.ArrayList;
 
+import com.coconut.tl.objects.Player;
 import com.coconut.tl.objects.RObject;
+import com.coconut.tl.objects.Rock;
 
 import dev.suback.marshmallow.object.MSObject;
 import dev.suback.marshmallow.transform.MSTrans;
@@ -10,15 +12,52 @@ import dev.suback.marshmallow.transform.MSTrans;
 public class TimeLine {
 
 	public ArrayList<TimeBundle> bundles = new ArrayList<>();
-	private RObject ownerObject;
+	public RObject ownerObject;
 	public MSObject replayObject;
 	public MSTrans replayObjectTargetPosition = new MSTrans(0, 0);
 	private int lineIndex = 0;
+	private String object;
+	public boolean _reset = false;
+	public int startX, startY, startDir;
+	public MSTrans backPosition = new MSTrans(0, 0);
 
-	public TimeLine(RObject ownerObject, int lineIndex) {
+	private boolean playerTimeLine = false;
+
+	public TimeLine(int lineIndex, String object, int x, int y, int dir, boolean playerTimeLine) {
 		initBundle();
-		this.ownerObject = ownerObject;
+
+		this.playerTimeLine = playerTimeLine;
+		replayObjectTargetPosition.SetTransform(startX, startY);
+
 		this.lineIndex = lineIndex;
+		this.startDir = dir;
+		this.startX = x;
+		this.startY = y;
+		this.object = object;
+
+		if (!playerTimeLine)
+			createOwnerObject();
+		else
+			createPlayer();
+	}
+
+	public void createPlayer() {
+		this.ownerObject = new Player(startDir, startX, startY, this);
+		this.replayObjectTargetPosition.SetTransform(startX, startY);
+		
+		if (bundles.get(0).nodes.size() < 30)
+			for (int i = 0; i < 30; i++)
+				bundles.get(0).nodes.add(new TimeNode("move"));
+	}
+
+	public void createOwnerObject() {
+		if (object.equals("rock")) {
+			this.ownerObject = new Rock(startDir, startX, startY, this);
+		}
+	}
+
+	public void activateObject() {
+
 	}
 
 	public void activateTile() {
@@ -29,6 +68,10 @@ public class TimeLine {
 		return lineIndex;
 	}
 
+	public boolean getPlayerTimeLine() {
+		return playerTimeLine;
+	}
+
 	public RObject getOwnerObject() {
 		return ownerObject;
 	}
@@ -37,7 +80,6 @@ public class TimeLine {
 		if (replayObject != null) {
 			double _cxv = (replayObjectTargetPosition.GetX() - replayObject.position.GetX()) / 6,
 					_cyv = (replayObjectTargetPosition.GetY() - replayObject.position.GetY()) / 6;
-
 			replayObject.position.Translate(_cxv, _cyv);
 		}
 	}
@@ -46,9 +88,6 @@ public class TimeLine {
 		TimeBundle _result = null;
 
 		for (int i = 0; i < bundles.size(); i++) {
-//			System.out.println(bundles.get(i).startPosition + " " + time + " "
-//					+ (bundles.get(i).startPosition + bundles.get(i).nodes.size()) + " " + time);
-
 			if (bundles.get(i).startPosition <= time
 					&& bundles.get(i).startPosition + bundles.get(i).nodes.size() >= time) {
 				_result = bundles.get(i);
@@ -62,7 +101,8 @@ public class TimeLine {
 		if (bundles.size() < 1)
 			return;
 
-		bundles.get(0).nodes.add(new TimeNode(ownerObject.position, ownerObject.getDirection(), 1));
+		if (!this.getPlayerTimeLine())
+			bundles.get(0).nodes.add(new TimeNode("move"));
 	}
 
 	public void initBundle() {
