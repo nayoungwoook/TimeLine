@@ -49,6 +49,12 @@ public class Asset {
 			new MSSprite("img/dust_particle.png").CutImage(16 * 3, 0, 16, 16),
 			new MSSprite("img/dust_particle.png").CutImage(16 * 4, 0, 16, 16), };
 
+	public static final MSSprite CLEAR_PARTICLE[] = { new MSSprite("img/clear_particle.png").CutImage(0, 0, 16, 16),
+			new MSSprite("img/clear_particle.png").CutImage(16, 0, 16, 16),
+			new MSSprite("img/clear_particle.png").CutImage(16 * 2, 0, 16, 16),
+			new MSSprite("img/clear_particle.png").CutImage(16 * 3, 0, 16, 16),
+			new MSSprite("img/clear_particle.png").CutImage(16 * 4, 0, 16, 16), };
+
 	public static MSResource resource = new MSResource();
 	public static final Font KA1[] = { resource.GetFont("ka1.ttf", 15f), resource.GetFont("ka1.ttf", 30f),
 			resource.GetFont("ka1.ttf", 45f), resource.GetFont("ka1.ttf", 60), };

@@ -9,6 +9,8 @@ import com.coconut.tl.record.RecordSystem;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.record.timeline.TimeNode;
+import com.coconut.tl.stages.Stage;
+import com.coconut.tl.stages.Stage01;
 
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.camera.MSCamera;
@@ -36,6 +38,8 @@ public class Game implements MSState {
 
 	public static MSSprite cursorImage;
 
+	public static Stage stage;
+
 	@Override
 	public void Init() {
 
@@ -43,16 +47,10 @@ public class Game implements MSState {
 
 		recordSystem = new RecordSystem();
 
-		int constOfTileX = MSDisplay.width / 2 - MS * 24 / 2 + MS / 2;
-		int constOfTileY = MSDisplay.height / 2 - MS * 13 / 2 + MS / 2;
-
 		targetCPosition.SetZ(1.3);
 
-		// player
-		timelines.add(new TimeLine(1, "player", constOfTileX + MS * 7, constOfTileY + MS * 6, 3, true));
+		stage = new Stage01(this);
 
-		// object
-		timelines.add(new TimeLine(0, "rock", constOfTileX + MS * 12, constOfTileY + MS, 2, false));
 	}
 
 	private int timelineY = 0;
@@ -142,6 +140,8 @@ public class Game implements MSState {
 			renderTimeLine(timelines.get(i), i);
 		}
 
+		stage.render();
+
 		// CURSOR
 		MSShape.RenderUIImage(cursorImage, (int) MSInput.mousePointer.GetX() + 15, (int) MSInput.mousePointer.GetY(), 3,
 				MS, MS);
@@ -173,23 +173,21 @@ public class Game implements MSState {
 		renderUi();
 	}
 
-//	private double timer = 0;
+	private double timer = 0;
 
 	private void cameraMovement() {
 
-//		timer += 0.05;
+		timer += 0.025;
 
-//		double rotValue = Math.sin(timer) / 200;
-//		double zomValue = Math.cos(timer) / 200;
-//		MSCamera.rotation = (float) rotValue;
-//		MSCamera.position.SetZ(zomValue + 1);
-//		MSCamera.position.Translate(Math.sin(timer / 10) * 1.2, Math.cos(timer / 10) * 1.2 + 3);
+		double rotValue = Math.sin(timer) / 200;
+		MSCamera.rotation = (float) rotValue;
+		MSCamera.position.Translate(Math.sin(timer / 10) * 1.2, Math.cos(timer / 10) * 1.2 + 3);
 
-//		if (timer > Math.PI * 2 * 10)
-//			timer = 0;
+		if (timer > Math.PI * 2 * 10)
+			timer = 0;
 
 		if (gameState == 0) {
-			if (timelines.get(0).ownerObject != null)
+			if (timelines.size() > 0 && timelines.get(0).ownerObject != null)
 				targetCPosition.SetTransform(timelines.get(0).ownerObject.position.GetX() - MSDisplay.width / 2,
 						timelines.get(0).ownerObject.position.GetY() - MSDisplay.height / 2, 1.4);
 		} else {
