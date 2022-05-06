@@ -13,16 +13,15 @@ public class Stage {
 	protected Game game;
 	protected final int CONST_OF_TILE_X = MSDisplay.width / 2 - Game.MS * 24 / 2 + Game.MS / 2,
 			CONST_OF_TILE_Y = MSDisplay.height / 2 - Game.MS * 13 / 2 + Game.MS / 2;
+	public int playerNodeSize = 0;
 
 	public Stage(Game game) {
 		this.game = game;
-		stageStarted();
 	}
 
 	public void render() {
 		MSShape.SetColor(new Color(255, 255, 255));
 		MSShape.SetFont(Asset.KA1[3]);
-
 	}
 
 	public void stageStarted() {

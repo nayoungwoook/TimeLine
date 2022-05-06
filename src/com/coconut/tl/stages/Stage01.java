@@ -7,6 +7,8 @@ public class Stage01 extends Stage {
 
 	public Stage01(Game game) {
 		super(game);
+		
+		playerNodeSize = 16;
 	}
 
 	@Override

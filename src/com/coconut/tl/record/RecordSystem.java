@@ -16,7 +16,7 @@ public class RecordSystem {
 	private int maxRecordTime = 30;
 	private int timer = 0;
 
-	public boolean bundleSelected = false;
+	public boolean bundleSelected = false, markerSelected = false;
 
 	public RecordSystem() {
 		timer = 0;
@@ -78,12 +78,20 @@ public class RecordSystem {
 				changeRecording();
 		}
 
-		if (MSInput.mouseCenter) {
-			if (!run && !recording) {
-				int cutClickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;
-				timer = cutClickPos;
+		int clickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;
+		if (MSInput.mouseLeft) {
+			if (!run && !recording && !bundleSelected) {
+				if (Math.abs(clickPos - timer) <= 1) {
+					markerSelected = true;
+				}
 			}
 		}
+
+		if (!MSInput.mouseLeft)
+			markerSelected = false;
+
+		if (markerSelected)
+			timer = clickPos;
 
 		if (MSInput.mouseCenter || MSInput.mouseLeft || MSInput.mouseRight) {
 			if (!run && !recording) {

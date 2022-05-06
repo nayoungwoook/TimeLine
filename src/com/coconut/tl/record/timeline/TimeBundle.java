@@ -42,9 +42,13 @@ public class TimeBundle {
 		if (cutClickPos >= 1 && cutClickPos < nodes.size() - 1) {
 
 			int len = nodes.size() - cutClickPos;
+			int lenFinal = len - 1;
 
-			for (int i = 0; i < len - 1; i++) {
-				_subBundle.nodes.add(nodes.get(i + cutClickPos + 1));
+			if (len - 1 == 0)
+				lenFinal = 1;
+
+			for (int i = 0; i < lenFinal; i++) {
+				_subBundle.nodes.add(nodes.get(i + cutClickPos));
 			}
 
 			for (int i = 0; i < len - 1; i++) {
@@ -54,7 +58,7 @@ public class TimeBundle {
 
 		timeline.bundles.add(_subBundle);
 
-		MSInput.mouseRight = false;
+		MSInput.mouseLeft = false;
 	}
 
 	private int moveClickStartPos = 0, nowClickPos = 0;
@@ -94,23 +98,22 @@ public class TimeBundle {
 
 	public void update() {
 		if (!Game.recordSystem.run) {
-
 			int xx = (startPosition + nodes.size() / 2) * TIME_NODE_SIZE + Game.MS / 2 * 3;
-			int yy = (MSDisplay.height - (Game.MS / 2 * 3)) - timeline.getLineIndex() * Game.MS;
-			if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 16 * 1 * nodes.size()) {
-				if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3 && !timeline.getPlayerTimeLine()) {
-					if (MSInput.mouseRight) {
-						cutBundle();
-					}
-				}
-			}
+			int yy = (MSDisplay.height - (Game.MS / 7 * 8)) - timeline.getLineIndex() * Game.MS;
 
 			if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 16 * 1 * nodes.size()) {
 				if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3) {
 					if (MSInput.mouseLeft) {
-						if (!Game.recordSystem.bundleSelected) {
-							selected = true;
-							Game.recordSystem.bundleSelected = true;
+						if (Game.tool == 0) {
+							if (!Game.recordSystem.bundleSelected) {
+								selected = true;
+								Game.recordSystem.bundleSelected = true;
+							}
+						} else if (Game.tool == 1) {
+							if (!timeline.getPlayerTimeLine()) {
+								cutBundle();
+								MSInput.mouseLeft = false;
+							}
 						}
 					}
 				}
@@ -124,6 +127,11 @@ public class TimeBundle {
 						moveClickStarted = false;
 					}
 				}
+			}
+
+			if (Game.recordSystem.markerSelected) {
+				selected = false;
+				Game.recordSystem.bundleSelected = false;
 			}
 
 			if (selected && !timeline.getPlayerTimeLine()) {
@@ -150,6 +158,7 @@ public class TimeBundle {
 						} else {
 							startPosition = backStartPosition;
 						}
+
 						if (checkBundleOverlapped()) {
 							if (overlappedBundle != null) {
 								startPosition = backStartPosition;

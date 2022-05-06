@@ -36,6 +36,8 @@ public class Game implements MSState {
 
 	public static int gameState = 0;
 
+	public static int tool = 0;
+
 	public static MSSprite cursorImage;
 
 	public static Stage stage;
@@ -44,16 +46,14 @@ public class Game implements MSState {
 	public void Init() {
 
 		cursorImage = Asset.UI_CURSOR[0];
+		stage = new Stage01(this);
+		stage.stageStarted();
 
 		recordSystem = new RecordSystem();
-
 		targetCPosition.SetZ(1.3);
-
-		stage = new Stage01(this);
-
 	}
 
-	private int timelineY = 0;
+	private int timelineY = 400;
 	public int targetTimelineY = 0;
 
 	private void renderTimeLine(TimeLine timeline, int index) {
@@ -120,10 +120,14 @@ public class Game implements MSState {
 				MSShape.RenderUIImage(Asset.UI_BUTTON[1], x, y, 3, MS, MS);
 			else
 				MSShape.RenderUIImage(Asset.UI_BUTTON[0], x, y, 3, MS, MS);
+		} else if (index == 1) {
+			MSShape.RenderUIImage(Asset.UI_BUTTON[2], x, y, 3, MS, MS);
+		} else if (index == 2) {
+			MSShape.RenderUIImage(Asset.UI_BUTTON[3], x, y, 3, MS, MS);
 		}
 
-		return Math.abs(MSInput.mousePointer.GetX() - x) / 2 <= Game.MS / 2
-				&& Math.abs(MSInput.mousePointer.GetY() - y) / 2 <= Game.MS / 2 && MSInput.mouseLeft;
+		return Math.abs(MSInput.mousePointer.GetX() - x) / 2 <= Game.MS / 5
+				&& Math.abs(MSInput.mousePointer.GetY() - y) / 2 <= Game.MS / 5 && MSInput.mouseLeft;
 	}
 
 	private void renderUi() {
@@ -133,6 +137,16 @@ public class Game implements MSState {
 			recordSystem.run = !recordSystem.run;
 			if (recordSystem.run)
 				recordSystem.resetTimer();
+			MSInput.mouseLeft = false;
+		}
+
+		if (renderTimeLineButton(1)) {
+			tool = 0;
+			MSInput.mouseLeft = false;
+		}
+
+		if (renderTimeLineButton(2)) {
+			tool = 1;
 			MSInput.mouseLeft = false;
 		}
 
@@ -266,6 +280,11 @@ public class Game implements MSState {
 		} else if (gameState == 1) {
 			targetTimelineY = -20;
 		}
+
+		if (tool == 0)
+			cursorImage = Asset.UI_CURSOR[0];
+		else if (tool == 1)
+			cursorImage = Asset.UI_CURSOR[1];
 
 		timelineY += (targetTimelineY - timelineY) / 20;
 

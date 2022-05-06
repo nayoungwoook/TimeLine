@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.coconut.tl.objects.Player;
 import com.coconut.tl.objects.RObject;
 import com.coconut.tl.objects.Rock;
+import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.object.MSObject;
 import dev.suback.marshmallow.transform.MSTrans;
@@ -44,10 +45,11 @@ public class TimeLine {
 	public void createPlayer() {
 		this.ownerObject = new Player(startDir, startX, startY, this);
 		this.replayObjectTargetPosition.SetTransform(startX, startY);
-		
-		if (bundles.get(0).nodes.size() < 30)
-			for (int i = 0; i < 30; i++)
-				bundles.get(0).nodes.add(new TimeNode("move"));
+
+		if (Game.stage != null && Game.stage.playerNodeSize != 0)
+			if (bundles.get(0).nodes.size() < Game.stage.playerNodeSize)
+				for (int i = 0; i < Game.stage.playerNodeSize; i++)
+					bundles.get(0).nodes.add(new TimeNode("move"));
 	}
 
 	public void createOwnerObject() {
