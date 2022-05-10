@@ -41,6 +41,9 @@ public class Game implements MSState {
 
 	public static boolean _backupPlayerDied = false;
 
+	public boolean playerDied = false;
+	public MSTrans playerDiedPosition = new MSTrans(0, 0);
+
 	@Override
 	public void Init() {
 
@@ -131,6 +134,11 @@ public class Game implements MSState {
 
 	private void renderUi() {
 
+		if (playerDied) {
+			MSShape.RenderImage(Asset.UI_DIE_MARKER, (int) playerDiedPosition.GetX(), (int) playerDiedPosition.GetY(),
+					3, Game.MS, Game.MS);
+		}
+
 		// BUTTON
 		if (renderTimeLineButton(0)) {
 			recordSystem.run = !recordSystem.run;
@@ -163,10 +171,9 @@ public class Game implements MSState {
 	public void playerDie() {
 
 		if (!_backupPlayerDied) {
-			
 			MSCamera.position.Translate((int) Math.round(Math.random() * 30) - 15,
 					(int) Math.round(Math.random() * 30) - 15);
-			
+
 			_backupPlayerDied = true;
 		}
 
@@ -257,8 +264,8 @@ public class Game implements MSState {
 	public int replayTimer = 0;
 
 	public void updateReplayTurn() {
-		
-		//현재 노드에 따라 화면 구성하기 (리플레이)
+
+		// 현재 노드에 따라 화면 구성하기 (리플레이)
 		for (int i = 0; i < timelines.size(); i++) {
 			TimeBundle _curBundle = timelines.get(i).getBundleByTime(recordSystem.getTimer());
 			TimeNode _curNode = null;
@@ -271,13 +278,13 @@ public class Game implements MSState {
 				recordSystem.createPausedGame();
 			}
 		}
-		
+
 		// 타이머 돌리기
 		if (recordSystem.run)
 			recordSystem.runTimer();
-		
-		//클리어
-		if(recordSystem.getTimer() == stage.playerNodeSize) {
+
+		// 클리어
+		if (recordSystem.getTimer() == stage.playerNodeSize) {
 			recordSystem.run = false;
 		}
 	}

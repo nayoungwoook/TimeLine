@@ -2,6 +2,7 @@ package com.coconut.tl.objects;
 
 import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
+import com.coconut.tl.effect.DieParticle;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.state.Game;
 
@@ -24,6 +25,17 @@ public class Rock extends RObject {
 				if (MSMath.GetDistance(_obj.simulatedPosition, simulatedPosition) <= 2) {
 					if (_obj.getClass().equals(Player.class)) {
 						Game.timelines.get(i).ownerObject = null;
+
+						if (Game.recordSystem.run) {
+							for (int j = 0; j < (int) Math.round(Math.random() * 3) + 2; j++) {
+								Game.particles.add(new DieParticle((int) _obj.simulatedPosition.GetX(),
+										(int) _obj.simulatedPosition.GetY()));
+							}
+						}
+
+						Main.game.playerDied = true;
+						Main.game.playerDiedPosition.SetTransform(_obj.simulatedPosition.GetX(),
+								_obj.simulatedPosition.GetY());
 
 						if ((Game.gameState == 1 && Game.recordSystem.run) || Game.gameState == 0)
 							Main.game.playerDie();

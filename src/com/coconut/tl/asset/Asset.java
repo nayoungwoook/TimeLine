@@ -37,6 +37,8 @@ public class Asset {
 			new MSSprite("img/timeline.png").CutImage(16 * 3, 16, 16, 16),
 			new MSSprite("img/timeline.png").CutImage(16 * 3, 16 * 2, 16, 16), };
 
+	public static final MSSprite UI_DIE_MARKER = new MSSprite("img/die_marker.png");
+
 	public static final MSSprite UI_CURSOR[] = { new MSSprite("img/cursor.png").CutImage(0, 0, 16, 16),
 			new MSSprite("img/cursor.png").CutImage(16, 0, 16, 16), };
 
@@ -48,6 +50,12 @@ public class Asset {
 			new MSSprite("img/dust_particle.png").CutImage(16 * 2, 0, 16, 16),
 			new MSSprite("img/dust_particle.png").CutImage(16 * 3, 0, 16, 16),
 			new MSSprite("img/dust_particle.png").CutImage(16 * 4, 0, 16, 16), };
+
+	public static final MSSprite DIE_PARTICLE[] = { new MSSprite("img/die_particle.png").CutImage(0, 0, 16, 16),
+			new MSSprite("img/die_particle.png").CutImage(16, 0, 16, 16),
+			new MSSprite("img/die_particle.png").CutImage(16 * 2, 0, 16, 16),
+			new MSSprite("img/die_particle.png").CutImage(16 * 3, 0, 16, 16),
+			new MSSprite("img/die_particle.png").CutImage(16 * 4, 0, 16, 16), };
 
 	public static final MSSprite CLEAR_PARTICLE[] = { new MSSprite("img/clear_particle.png").CutImage(0, 0, 16, 16),
 			new MSSprite("img/clear_particle.png").CutImage(16, 0, 16, 16),

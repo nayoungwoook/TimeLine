@@ -92,7 +92,7 @@ public class TimeLine {
 
 		for (int i = 0; i < bundles.size(); i++) {
 			if (bundles.get(i).startPosition <= time
-					&& bundles.get(i).startPosition + bundles.get(i).nodes.size() >= time) {
+					&& bundles.get(i).startPosition + bundles.get(i).nodes.size() > time) {
 				_result = bundles.get(i);
 			}
 		}

@@ -25,6 +25,7 @@ public class RecordSystem {
 
 	public void createPausedGame() {
 
+		Main.game.playerDied = false;
 		for (int j = 0; j < Game.timelines.size(); j++) {
 			if (Game.timelines.get(j).ownerObject != null) {
 				Game.timelines.get(j).backPosition.SetTransform(Game.timelines.get(j).ownerObject.position.GetX(),
