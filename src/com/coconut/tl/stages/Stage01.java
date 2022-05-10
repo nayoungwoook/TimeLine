@@ -16,11 +16,12 @@ public class Stage01 extends Stage {
 		super.stageStarted();
 		// player
 		Game.timelines
-				.add(new TimeLine(1, "player", CONST_OF_TILE_X + Game.MS * 7, CONST_OF_TILE_Y + Game.MS * 6, 3, true));
+		.add(new TimeLine(1, "player", CONST_OF_TILE_X + Game.MS * 7, CONST_OF_TILE_Y + Game.MS * 6, 3, true));
 
 		// object
 		Game.timelines
-				.add(new TimeLine(0, "rock", CONST_OF_TILE_X + Game.MS * 12, CONST_OF_TILE_Y + Game.MS, 2, false));
+		.add(new TimeLine(0, "rock", CONST_OF_TILE_X + Game.MS * 12, CONST_OF_TILE_Y + Game.MS, 2, false));
+
 	}
 
 }

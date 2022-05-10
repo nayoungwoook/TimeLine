@@ -3,6 +3,7 @@ package com.coconut.tl.record;
 import java.awt.event.KeyEvent;
 
 import com.coconut.tl.Main;
+import com.coconut.tl.objects.Rock;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
@@ -34,7 +35,18 @@ public class RecordSystem {
 		}
 
 		for (int i = 0; i < timer + 1; i++) {
-			for (int j = Game.timelines.size() - 1; j > -1; j--) {
+
+			Main.game.replayTimer = i;
+			// 리플레이 전에 충돌 체킹
+			for (int j = 0; j < Game.timelines.size(); j++) {
+				if (Game.timelines.get(j).ownerObject != null) {
+					if (Game.timelines.get(j).ownerObject.getClass() == Rock.class) {
+						((Rock) Game.timelines.get(j).ownerObject).checkInGameCollision();
+					}
+				}
+			}
+
+			for (int j = 0; j < Game.timelines.size(); j++) {
 
 				TimeBundle _bundle = Game.timelines.get(j).getBundleByTime(i);
 				if (_bundle != null) {
@@ -48,7 +60,6 @@ public class RecordSystem {
 								Game.timelines.get(j).createPlayer();
 							}
 						} else {
-
 							if (Game.timelines.get(j).ownerObject != null) {
 								if (_node.getDataType().equals("move")) {
 									// move
@@ -91,9 +102,9 @@ public class RecordSystem {
 			markerSelected = false;
 
 		if (markerSelected)
-			timer = clickPos;
+			timer = clickPos + 1;
 
-		if (MSInput.mouseCenter || MSInput.mouseLeft || MSInput.mouseRight) {
+		if (MSInput.mouseLeft) {
 			if (!run && !recording) {
 				createPausedGame();
 			}
@@ -102,8 +113,11 @@ public class RecordSystem {
 		if (MSInput.keys[KeyEvent.VK_SPACE] && Game.gameState == 1) {
 			run = !run;
 
-			if (run)
+			if (run) {
+				Game._backupPlayerDied = false;
 				resetTimer();
+			}
+
 			MSInput.keys[KeyEvent.VK_SPACE] = false;
 		}
 	}
@@ -115,11 +129,12 @@ public class RecordSystem {
 	public void record() {
 		for (int i = 0; i < Game.timelines.size(); i++)
 			Game.timelines.get(i).record();
+
 		runTimer();
 	}
 
 	public void resetTimer() {
-		timer = 0;
+		timer = -1;
 
 		for (int i = 0; i < Game.timelines.size(); i++) {
 			Game.timelines.get(i).replayObject = null;

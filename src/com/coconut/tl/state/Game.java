@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.util.ArrayList;
 
 import com.coconut.tl.asset.Asset;
+import com.coconut.tl.objects.Rock;
 import com.coconut.tl.objects.tile.Tile;
 import com.coconut.tl.record.RecordSystem;
 import com.coconut.tl.record.timeline.TimeBundle;
@@ -31,16 +32,14 @@ public class Game implements MSState {
 
 	public static ArrayList<Tile> tiles = new ArrayList<>();
 	public static ArrayList<MSObject> particles = new ArrayList<>();
-
 	public static ArrayList<TimeLine> timelines = new ArrayList<>();
 
 	public static int gameState = 0;
-
 	public static int tool = 0;
-
 	public static MSSprite cursorImage;
-
 	public static Stage stage;
+
+	public static boolean _backupPlayerDied = false;
 
 	@Override
 	public void Init() {
@@ -60,7 +59,7 @@ public class Game implements MSState {
 
 		int TIME_NODE_SIZE = MS / 16 * 2;
 
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < stage.playerNodeSize * TIME_NODE_SIZE / MS + 1; i++) {
 			if (!timeline.getPlayerTimeLine()) {
 				MSShape.RenderUIImage(Asset.UI_TIMELINE_BG, (i + 2) * MS,
 						(MSDisplay.height - (MS / 2 * 3)) + (index - (timelines.size() - 1)) * MS + timelineY, 3, MS,
@@ -162,8 +161,21 @@ public class Game implements MSState {
 	}
 
 	public void playerDie() {
+
+		if (!_backupPlayerDied) {
+			
+			MSCamera.position.Translate((int) Math.round(Math.random() * 30) - 15,
+					(int) Math.round(Math.random() * 30) - 15);
+			
+			_backupPlayerDied = true;
+		}
+
 		if (gameState == 0)
 			recordSystem.changeRecording();
+
+		if (Game.gameState == 1) {
+			Game.recordSystem.run = false;
+		}
 	}
 
 	@Override
@@ -190,7 +202,6 @@ public class Game implements MSState {
 	private double timer = 0;
 
 	private void cameraMovement() {
-
 		timer += 0.025;
 
 		double rotValue = Math.sin(timer) / 200;
@@ -215,14 +226,14 @@ public class Game implements MSState {
 		MSCamera.position.Translate(_cxv, _cyv, _czv);
 	}
 
-	// turn
+	// 턴
 	private double turnTimer = 0;
 	public static double turnSpeed = 0.05;
 
 	public void changeGameState(int state) {
 		gameState = state;
 
-		// to edit mode
+		// 에디트 모드로 이동하기
 		if (state == 1) {
 			turnTimer = 0;
 			recordSystem.resetTimer();
@@ -243,8 +254,11 @@ public class Game implements MSState {
 		}
 	}
 
-	public void updateReplayTurn() {
+	public int replayTimer = 0;
 
+	public void updateReplayTurn() {
+		
+		//현재 노드에 따라 화면 구성하기 (리플레이)
 		for (int i = 0; i < timelines.size(); i++) {
 			TimeBundle _curBundle = timelines.get(i).getBundleByTime(recordSystem.getTimer());
 			TimeNode _curNode = null;
@@ -257,18 +271,39 @@ public class Game implements MSState {
 				recordSystem.createPausedGame();
 			}
 		}
-
+		
+		// 타이머 돌리기
 		if (recordSystem.run)
 			recordSystem.runTimer();
+		
+		//클리어
+		if(recordSystem.getTimer() == stage.playerNodeSize) {
+			recordSystem.run = false;
+		}
 	}
 
 	public void updateRecordTurn() {
 		if (recordSystem.isRecording()) {
+
+			// 업데이트 하고 미리 충돌 체킹 (레코딩 부분)
+			for (int i = 0; i < timelines.size(); i++) {
+				if (timelines.get(i).ownerObject != null) {
+					if (timelines.get(i).ownerObject.getClass() == Rock.class) {
+						((Rock) timelines.get(i).ownerObject).checkInGameCollision();
+					}
+				}
+			}
+
+			recordSystem.record();
+
+			if (_backupPlayerDied) {
+				return;
+			}
+
 			for (int i = 0; i < timelines.size(); i++)
 				if (timelines.get(i).ownerObject != null)
 					timelines.get(i).ownerObject.turn();
 
-			recordSystem.record();
 		}
 	}
 
@@ -278,7 +313,10 @@ public class Game implements MSState {
 		if (gameState == 0) {
 			targetTimelineY = 400;
 		} else if (gameState == 1) {
-			targetTimelineY = -20;
+			if (recordSystem.run)
+				targetTimelineY = 400;
+			else
+				targetTimelineY = -20;
 		}
 
 		if (tool == 0)

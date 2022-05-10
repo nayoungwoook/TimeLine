@@ -48,15 +48,15 @@ public class TimeBundle {
 				lenFinal = 1;
 
 			for (int i = 0; i < lenFinal; i++) {
-				_subBundle.nodes.add(nodes.get(i + cutClickPos));
+				_subBundle.nodes.add(nodes.get(i + cutClickPos - 1));
 			}
 
 			for (int i = 0; i < len - 1; i++) {
 				nodes.remove(nodes.get(cutClickPos + 1));
 			}
+			
+			timeline.bundles.add(_subBundle);
 		}
-
-		timeline.bundles.add(_subBundle);
 
 		MSInput.mouseLeft = false;
 	}
@@ -71,7 +71,6 @@ public class TimeBundle {
 		boolean overlapped = false;
 		for (int i = 0; i < timeline.bundles.size(); i++) {
 			if (timeline.bundles.get(i) != this) {
-
 				if (startPosition > timeline.bundles.get(i).startPosition) {
 					if (timeline.bundles.get(i).startPosition + timeline.bundles.get(i).nodes.size() > startPosition) {
 						overlapped = true;

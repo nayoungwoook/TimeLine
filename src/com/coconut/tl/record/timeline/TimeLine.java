@@ -56,6 +56,7 @@ public class TimeLine {
 		if (object.equals("rock")) {
 			this.ownerObject = new Rock(startDir, startX, startY, this);
 		}
+		this.replayObjectTargetPosition.SetTransform(startX, startY);
 	}
 
 	public void activateObject() {
