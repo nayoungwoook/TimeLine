@@ -91,27 +91,25 @@ public class RecordSystem {
 		}
 
 		int clickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;
-		if (MSInput.mouseLeft) {
-			if (!run && !recording && !bundleSelected) {
-				if (Math.abs(clickPos - timer) <= 1) {
-					markerSelected = true;
-				}
+		if (MSInput.mouseRight) {
+			if (!run && !recording) {
+				markerSelected = true;
 			}
 		}
 
-		if (!MSInput.mouseLeft)
+		if (!MSInput.mouseRight)
 			markerSelected = false;
 
 		if (markerSelected)
 			timer = clickPos + 1;
 
-		if (MSInput.mouseLeft) {
+		if (MSInput.mouseLeft || MSInput.mouseRight) {
 			if (!run && !recording) {
 				createPausedGame();
 			}
 		}
 
-		if (MSInput.keys[KeyEvent.VK_SPACE] && Game.gameState == 1) {
+		if (MSInput.keys[KeyEvent.VK_SPACE] && Game.gameState == 1 && !Game.stage.cleared) {
 			run = !run;
 
 			if (run) {
@@ -128,9 +126,6 @@ public class RecordSystem {
 	}
 
 	public void record() {
-		for (int i = 0; i < Game.timelines.size(); i++)
-			Game.timelines.get(i).record();
-
 		runTimer();
 	}
 

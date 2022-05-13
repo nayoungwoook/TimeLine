@@ -13,7 +13,7 @@ import dev.suback.marshmallow.transform.MSTrans;
 public class RObject extends MSObject {
 
 	private int direction = -1;
-	private MSTrans targetPosition;
+	protected MSTrans targetPosition;
 	public MSTrans simulatedPosition;
 	protected TimeLine timeline;
 

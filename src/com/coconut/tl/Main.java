@@ -17,11 +17,11 @@ public class Main {
 
 	public static void main(String[] args) {
 		display = new MSDisplay("TimeLine - by Coconut (MarshMallow)", 1280, 720);
-		game = new Game();
-//		title = new Title();
+//		game = new Game();
+		title = new Title();
 		display.setCursor(display.getToolkit().createCustomCursor(new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB),
 				new Point(0, 0), "null"));
-		MSState.SetState(game);
+		MSState.SetState(title);
 	}
 
 }

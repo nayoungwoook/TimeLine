@@ -27,7 +27,7 @@ public class Rock extends RObject {
 						Game.timelines.get(i).ownerObject = null;
 
 						if (Game.recordSystem.run) {
-							for (int j = 0; j < (int) Math.round(Math.random() * 3) + 2; j++) {
+							for (int j = 0; j < (int) Math.round(Math.random() * 5) + 5; j++) {
 								Game.particles.add(new DieParticle((int) _obj.simulatedPosition.GetX(),
 										(int) _obj.simulatedPosition.GetY()));
 							}

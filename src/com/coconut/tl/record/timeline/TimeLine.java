@@ -37,19 +37,32 @@ public class TimeLine {
 		this.object = object;
 
 		if (!playerTimeLine)
-			createOwnerObject();
+			createInitOwnerObject();
 		else
 			createPlayer();
+	}
+
+	private void createFullMoveNodes() {
+		if (Game.stage != null && Game.stage.playerNodeSize != 0)
+			if (bundles.get(0).nodes.size() < Game.stage.playerNodeSize)
+				for (int i = 0; i < Game.stage.playerNodeSize; i++)
+					bundles.get(0).nodes.add(new TimeNode("move"));
 	}
 
 	public void createPlayer() {
 		this.ownerObject = new Player(startDir, startX, startY, this);
 		this.replayObjectTargetPosition.SetTransform(startX, startY);
+		createFullMoveNodes();
+	}
 
-		if (Game.stage != null && Game.stage.playerNodeSize != 0)
-			if (bundles.get(0).nodes.size() < Game.stage.playerNodeSize)
-				for (int i = 0; i < Game.stage.playerNodeSize; i++)
-					bundles.get(0).nodes.add(new TimeNode("move"));
+	public void createInitOwnerObject() {
+		if (object.equals("rock")) {
+			this.ownerObject = new Rock(startDir, startX, startY, this);
+			
+			//nodes
+			createFullMoveNodes();
+		}
+		this.replayObjectTargetPosition.SetTransform(startX, startY);
 	}
 
 	public void createOwnerObject() {
@@ -98,14 +111,6 @@ public class TimeLine {
 		}
 
 		return _result;
-	}
-
-	public void record() {
-		if (bundles.size() < 1)
-			return;
-
-		if (!this.getPlayerTimeLine())
-			bundles.get(0).nodes.add(new TimeNode("move"));
 	}
 
 	public void initBundle() {

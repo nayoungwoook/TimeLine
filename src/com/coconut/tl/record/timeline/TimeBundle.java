@@ -47,8 +47,6 @@ public class TimeBundle {
 			if (len - 1 == 0)
 				lenFinal = 1;
 
-			System.out.println(lenFinal);
-
 			for (int i = 0; i < lenFinal; i++) {
 				_subBundle.nodes.add(nodes.get(i + cutClickPos));
 			}
