@@ -33,15 +33,18 @@ public class RObject extends MSObject {
 		position.Translate(_cxv, _cyv);
 	}
 
-	public void turn() {
-		if (direction == 0)
-			targetPosition.Translate(0, -Game.MS);
-		if (direction == 1)
-			targetPosition.Translate(-Game.MS, 0);
-		if (direction == 2)
-			targetPosition.Translate(0, Game.MS);
-		if (direction == 3)
-			targetPosition.Translate(Game.MS, 0);
+	public void turn(String dataType) {
+
+		if (dataType.equals("move")) {
+			if (direction == 0)
+				targetPosition.Translate(0, -Game.MS);
+			if (direction == 1)
+				targetPosition.Translate(-Game.MS, 0);
+			if (direction == 2)
+				targetPosition.Translate(0, Game.MS);
+			if (direction == 3)
+				targetPosition.Translate(Game.MS, 0);
+		}
 
 		simulatedPosition.SetTransform(targetPosition.GetX(), targetPosition.GetY());
 
@@ -56,7 +59,11 @@ public class RObject extends MSObject {
 					(int) position.GetY() + (int) Math.round(Math.random() * 20) - 10));
 		}
 	}
-
+	
+	public void setDirection(int dir) {
+		this.direction = dir;
+	}
+	
 	public int getDirection() {
 		return direction;
 	}

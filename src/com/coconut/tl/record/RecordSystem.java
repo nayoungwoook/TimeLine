@@ -64,7 +64,7 @@ public class RecordSystem {
 							if (Game.timelines.get(j).ownerObject != null) {
 								if (_node.getDataType().equals("move")) {
 									// move
-									Game.timelines.get(j).ownerObject.turn();
+									Game.timelines.get(j).ownerObject.turn("move");
 								}
 							}
 						}
@@ -132,6 +132,7 @@ public class RecordSystem {
 	public void resetTimer() {
 		timer = -1;
 
+		Game.playerPositionReset = false;
 		for (int i = 0; i < Game.timelines.size(); i++) {
 			Game.timelines.get(i).replayObject = null;
 		}

@@ -2,6 +2,7 @@ package com.coconut.tl.effect;
 
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.state.Game;
+import com.coconut.tl.state.StageSelect;
 
 import dev.suback.marshmallow.object.MSObject;
 
@@ -12,7 +13,7 @@ public class ClearParticle extends MSObject {
 	private float xv, yv;
 
 	public ClearParticle(int x, int y) {
-		super(x, y, Game.MS * 2, Game.MS * 2);
+		super(x, y, Game.MS, Game.MS);
 		position.SetZ(2);
 		SetSprite(Asset.CLEAR_DUST[0]);
 
@@ -23,7 +24,7 @@ public class ClearParticle extends MSObject {
 
 	@Override
 	public void Update() {
-		timer += 0.025f;
+		timer += 0.05f;
 
 		rotV += (0 - rotV) / 10;
 		xv += (0 - xv) / 20;
@@ -33,12 +34,13 @@ public class ClearParticle extends MSObject {
 		position.Translate(xv, yv);
 
 		try {
-			SetSprite(Asset.CLEAR_DUST[(int) (timer * 10)]);
+			SetSprite(Asset.CLEAR_PARTICLE[(int) (timer * 5)]);
 		} catch (Exception e) {
 		}
 
 		if (timer >= 1) {
 			Game.particles.remove(this);
+			StageSelect.particles.remove(this);
 		}
 	}
 

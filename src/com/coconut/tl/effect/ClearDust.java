@@ -12,28 +12,28 @@ public class ClearDust extends MSObject {
 	private float xv, yv;
 
 	public ClearDust(int x, int y) {
-		super(x, y, Game.MS, Game.MS);
+		super(x, y, Game.MS * 2, Game.MS * 2);
 		position.SetZ(2);
-		SetSprite(Asset.CLEAR_PARTICLE[0]);
+		SetSprite(Asset.CLEAR_DUST[0]);
 
 		rotV = Math.round(Math.random() * 10) - 5;
-		xv = Math.round(Math.random() * Game.MS) - (Game.MS / 2);
-		yv = Math.round(Math.random() * Game.MS) - (Game.MS / 2);
+		xv = Math.round(Math.random() * Game.MS / 2) - (Game.MS / 4);
+		yv = Math.round(Math.random() * Game.MS / 2) - (Game.MS / 4);
 	}
 
 	@Override
 	public void Update() {
-		timer += 0.05f;
+		timer += 0.03f;
 
 		rotV += (0 - rotV) / 10;
-		xv += (0 - xv) / 5;
-		yv += (0 - yv) / 5;
-		
+		xv += (0 - xv) / 30;
+		yv += (0 - yv) / 30;
+
 		Rotate(rotV);
 		position.Translate(xv, yv);
-		
+
 		try {
-			SetSprite(Asset.CLEAR_PARTICLE[(int) (timer * 5)]);
+			SetSprite(Asset.CLEAR_DUST[(int) (timer * 10)]);
 		} catch (Exception e) {
 		}
 

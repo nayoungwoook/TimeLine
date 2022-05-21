@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.awt.image.BufferedImage;
 
 import com.coconut.tl.state.Game;
+import com.coconut.tl.state.StageSelect;
 import com.coconut.tl.state.Title;
 
 import dev.suback.marshmallow.MSDisplay;
@@ -14,7 +15,8 @@ public class Main {
 	public static MSDisplay display;
 	public static Game game;
 	public static Title title;
-
+	public static StageSelect select;
+	
 	public static void main(String[] args) {
 		display = new MSDisplay("TimeLine - by Coconut (MarshMallow)", 1280, 720);
 //		game = new Game();

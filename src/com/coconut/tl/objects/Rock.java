@@ -31,6 +31,8 @@ public class Rock extends RObject {
 								Game.particles.add(new DieParticle((int) _obj.simulatedPosition.GetX(),
 										(int) _obj.simulatedPosition.GetY()));
 							}
+						
+							Asset.WAV_DIE.play();
 						}
 
 						Main.game.playerDied = true;

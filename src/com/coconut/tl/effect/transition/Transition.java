@@ -32,7 +32,7 @@ public class Transition extends MSObject {
 		if ((fadeOut && timer >= 1.9) || (!fadeOut && timer >= 0.9)) {
 			if (awaitTimer >= 1.1)
 				list.remove(this);
-			
+
 			awaitTimer += 0.025;
 		} else {
 			timer += 0.04;

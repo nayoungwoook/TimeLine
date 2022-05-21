@@ -1,10 +1,11 @@
 package com.coconut.tl.state;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
 import com.coconut.tl.asset.Asset;
-import com.coconut.tl.effect.ClearParticle;
+import com.coconut.tl.effect.ClearDust;
 import com.coconut.tl.effect.transition.Transition;
 import com.coconut.tl.objects.Rock;
 import com.coconut.tl.objects.tile.Tile;
@@ -14,6 +15,7 @@ import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.stages.Stage;
 import com.coconut.tl.stages.Stage01;
+import com.coconut.tl.stages.Stage02;
 
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.camera.MSCamera;
@@ -42,6 +44,8 @@ public class Game implements MSState {
 	public static MSSprite cursorImage;
 	public static Stage stage;
 
+	public static boolean playerPositionReset = false;
+
 	// 스테이트 전환후, 기다리는 타이머
 	private double awaitTimer = 0;
 
@@ -50,23 +54,36 @@ public class Game implements MSState {
 	public boolean playerDied = false;
 	public MSTrans playerDiedPosition = new MSTrans(0, 0);
 
+	private int stageIndex = 1, chapter = 0;
+	private boolean stageStarted = false;
+
+	public Game(int stageIndex, int chapter) {
+		this.stageIndex = stageIndex;
+		this.chapter = chapter;
+	}
+
 	@Override
 	public void Init() {
 
+		stageStarted = false;
 		cursorImage = Asset.UI_CURSOR[0];
 
 		recordSystem = new RecordSystem();
 
-		stage = new Stage01(this);
+		if (chapter == 1) {
+			switch (stageIndex) {
+			case 1:
+				stage = new Stage01(this);
+				break;
+			case 2:
+				stage = new Stage02(this);
+				break;
+			}
+		}
+
 		stage.stageStarted();
 
 		targetCPosition.SetZ(1.3);
-
-		for (int i = 0; i < 15; i++) {
-			for (int j = 0; j < 9; j++) {
-				transitions.add(new Transition(transitions, true, (i - 1) * Game.MS * 2, Game.MS * 2 * (j - 1)));
-			}
-		}
 	}
 
 	private int timelineY = 400;
@@ -90,15 +107,20 @@ public class Game implements MSState {
 
 		for (int i = 0; i < timeline.bundles.size(); i++) {
 			TimeBundle _bundle = timeline.bundles.get(i);
+
+			int selected = 0;
+			if (_bundle.onMouse)
+				selected = 1;
+
 			for (int j = 0; j < _bundle.nodes.size(); j++) {
-				MSSprite _image = Asset.UI_TIMELINE[0];
+				MSSprite _image = Asset.UI_TIMELINE[selected][0];
 				if (!timeline.getPlayerTimeLine()) {
 					if (j == 0)
-						_image = Asset.UI_TIMELINE[2];
+						_image = Asset.UI_TIMELINE[selected][2];
 					else if (j == _bundle.nodes.size() - 1)
-						_image = Asset.UI_TIMELINE[1];
+						_image = Asset.UI_TIMELINE[selected][1];
 					if (_bundle.nodes.size() == 1)
-						_image = Asset.UI_TIMELINE[3];
+						_image = Asset.UI_TIMELINE[selected][3];
 				} else {
 					_image = Asset.UI_PLAYER_TIMELINE[0];
 					if (j == 0)
@@ -175,11 +197,24 @@ public class Game implements MSState {
 			renderTimeLine(timelines.get(i), i);
 		}
 
+		if (!stageStarted) {
+			MSShape.SetColor(new Color(0, 0, 0));
+			MSShape.RenderRect(MSDisplay.width / 2, MSDisplay.height / 2, 4, MSDisplay.width * 2, MSDisplay.height * 2);
+
+			MSShape.SetColor(new Color(255, 255, 255));
+			MSShape.SetFont(Asset.FONT[2]);
+
+			if (stageIndex == 1)
+				MSShape.RenderText("stage 01 - let's start", MSDisplay.width / 2, MSDisplay.height / 2, 5);
+			else if (stageIndex == 2)
+				MSShape.RenderText("stage 02 - Moves Like Jagger", MSDisplay.width / 2, MSDisplay.height / 2, 5);
+		}
+
 		stage.render();
 
 		// CURSOR
-		MSShape.RenderUIImage(cursorImage, (int) MSInput.mousePointer.GetX() + 15, (int) MSInput.mousePointer.GetY(), 3,
-				MS, MS);
+		MSShape.RenderUIImage(cursorImage, (int) MSInput.mousePointer.GetX() + 15, (int) MSInput.mousePointer.GetY(),
+				10, MS, MS);
 
 		// GAME CLEARED
 		if (stage.cleared && stage.clearTimer >= 1) {
@@ -200,22 +235,22 @@ public class Game implements MSState {
 			MSShape.RenderText("next stage", MSDisplay.width / 2, y, 3);
 
 			y = MSDisplay.height / 7 * 5 + 40;
-			if (Math.abs(y - MSInput.mousePointer.GetY() - 10) <= 15)
+			if (Math.abs(y - MSInput.mousePointer.GetY() - 10) <= 15) {
 				MSShape.SetColor(new Color(255, 255, 255));
-			else
+			} else {
 				MSShape.SetColor(new Color(155, 155, 155));
+			}
 
 			MSShape.RenderText("stage select", MSDisplay.width / 2, y, 3);
 
 			for (int i = -2; i < 3; i++) {
-				if ((int) Math.round(Math.random() * 10) == 0)
-					particles.add(new ClearParticle(MSDisplay.width / 2 + i * 100, MSDisplay.height / 2));
+				if ((int) Math.round(Math.random() * 4) == 0)
+					particles.add(new ClearDust(MSDisplay.width / 2 + i * 100, MSDisplay.height / 2));
 			}
 		}
 	}
 
 	public void playerDie() {
-
 		if (!_backupPlayerDied) {
 			MSCamera.position.Translate((int) Math.round(Math.random() * 50) - 25,
 					(int) Math.round(Math.random() * 50) - 25);
@@ -233,15 +268,15 @@ public class Game implements MSState {
 
 	@Override
 	public void Render() {
-		
+
 		for (int i = 0; i < transitions.size(); i++)
 			transitions.get(i).Render();
 
-		if(awaitTimer < 0.1) {
+		if (awaitTimer < 0.1) {
 			MSShape.SetColor(new Color(0, 0, 0));
-			MSShape.RenderRect(MSDisplay.width/2, MSDisplay.height/2, 3, MSDisplay.width * 2, MSDisplay.height * 2);
+			MSShape.RenderRect(MSDisplay.width / 2, MSDisplay.height / 2, 3, MSDisplay.width * 2, MSDisplay.height * 2);
 		}
-		
+
 		for (int i = 0; i < tiles.size(); i++)
 			tiles.get(i).Render();
 
@@ -256,8 +291,9 @@ public class Game implements MSState {
 
 		MSShape.SetColor(new Color(0, 0, 0));
 		MSShape.RenderRect(MSDisplay.width / 2, MSDisplay.height / 2, 0.9, MSDisplay.width * 2, MSDisplay.height * 2);
-		MSShape.RenderImage(Asset.STAGES[0], MSDisplay.width / 2, MSDisplay.height / 2, 1, MS * 24, MS * 13);
-		
+		MSShape.RenderImage(Asset.STAGES[stageIndex - 1], MSDisplay.width / 2, MSDisplay.height / 2, 1, MS * 24,
+				MS * 13);
+
 		renderUi();
 	}
 
@@ -279,8 +315,9 @@ public class Game implements MSState {
 						timelines.get(0).ownerObject.position.GetY() - MSDisplay.height / 2, 1.6);
 		} else {
 			if (recordSystem.run && !stage.cleared) {
-				targetCPosition.SetTransform(timelines.get(0).ownerObject.position.GetX() - MSDisplay.width / 2,
-						timelines.get(0).ownerObject.position.GetY() - MSDisplay.height / 2, 1.6);
+				if (targetCPosition != null && timelines.get(0) != null && timelines.get(0).ownerObject != null)
+					targetCPosition.SetTransform(timelines.get(0).ownerObject.position.GetX() - MSDisplay.width / 2,
+							timelines.get(0).ownerObject.position.GetY() - MSDisplay.height / 2, 1.6);
 			} else {
 				targetCPosition.SetTransform(0, 0, 1);
 			}
@@ -308,9 +345,13 @@ public class Game implements MSState {
 	}
 
 	private void updateTurn() {
+
 		turnTimer += turnSpeed;
 		if (turnTimer >= 1) {
 			turnTimer = 0;
+
+			if (!Game.stage.cleared && Game.recordSystem.run && Game.playerPositionReset && this.awaitTimer >= 0.1)
+				Asset.WAV_MOVE.play();
 
 			if (recordSystem != null) {
 				if (gameState == 0)
@@ -362,10 +403,11 @@ public class Game implements MSState {
 				return;
 			}
 
-			for (int i = 0; i < timelines.size(); i++)
-				if (timelines.get(i).ownerObject != null)
-					timelines.get(i).ownerObject.turn();
-
+			for (int i = 0; i < timelines.size(); i++) {
+				if (timelines.get(i).ownerObject != null) {
+					timelines.get(i).ownerObject.turn("move");
+				}
+			}
 		}
 	}
 
@@ -380,6 +422,7 @@ public class Game implements MSState {
 			else
 				targetTimelineY = -20;
 		}
+
 		if (stage.cleared)
 			targetTimelineY = 400;
 
@@ -390,12 +433,29 @@ public class Game implements MSState {
 
 		timelineY += (targetTimelineY - timelineY) / 20;
 
-		if (awaitTimer >= 1) {
+		if (MSInput.keys[KeyEvent.VK_SPACE] && !stageStarted) {
+
+			if (!stageStarted) {
+				awaitTimer = 0;
+				for (int i = 0; i < 15; i++) {
+					for (int j = 0; j < 9; j++) {
+						transitions
+								.add(new Transition(transitions, true, (i - 1) * Game.MS * 2, Game.MS * 2 * (j - 1)));
+					}
+				}
+			}
+
+			stageStarted = true;
+
+			MSInput.keys[KeyEvent.VK_SPACE] = false;
+		}
+
+		if (awaitTimer >= 1 && stageStarted) {
 			recordSystem.update();
 			updateTurn();
 			cameraMovement();
 		} else {
-			awaitTimer += 0.025;
+			awaitTimer += 0.02;
 		}
 
 		for (int i = 0; i < tiles.size(); i++)

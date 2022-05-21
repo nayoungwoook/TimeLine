@@ -4,6 +4,7 @@ import java.awt.Font;
 
 import dev.suback.marshmallow.image.MSSprite;
 import dev.suback.marshmallow.resource.MSResource;
+import dev.suback.marshmallow.resource.MSSound;
 
 public class Asset {
 
@@ -19,10 +20,15 @@ public class Asset {
 	public static final MSSprite PLAYER = new MSSprite("img/player.png");
 
 	public static final MSSprite UI_TIMELINE_BG = new MSSprite("img/timeline.png").CutImage(0, 0, 16, 16);
-	public static final MSSprite UI_TIMELINE[] = { new MSSprite("img/timeline.png").CutImage(16, 0, 16, 16),
-			new MSSprite("img/timeline.png").CutImage(0, 16, 16, 16),
-			new MSSprite("img/timeline.png").CutImage(16, 16, 16, 16),
-			new MSSprite("img/timeline.png").CutImage(16, 16 * 2, 16, 16), };
+	public static final MSSprite UI_TIMELINE[][] = {
+			{ new MSSprite("img/timeline.png").CutImage(16, 0, 16, 16),
+					new MSSprite("img/timeline.png").CutImage(0, 16, 16, 16),
+					new MSSprite("img/timeline.png").CutImage(16, 16, 16, 16),
+					new MSSprite("img/timeline.png").CutImage(16, 16 * 2, 16, 16), },
+			{ new MSSprite("img/timeline.png").CutImage(16, 16 * 3, 16, 16),
+					new MSSprite("img/timeline.png").CutImage(16 * 2, 16 * 3, 16, 16),
+					new MSSprite("img/timeline.png").CutImage(16 * 3, 16 * 3, 16, 16),
+					new MSSprite("img/timeline.png").CutImage(0, 16 * 3, 16, 16), }, };
 
 	public static final MSSprite UI_BUTTON[] = { new MSSprite("img/button.png").CutImage(0, 0, 16, 16),
 			new MSSprite("img/button.png").CutImage(16, 0, 16, 16),
@@ -101,8 +107,12 @@ public class Asset {
 	public static final Font FONT[] = { resource.GetFont("font.ttf", 15f), resource.GetFont("font.ttf", 30f),
 			resource.GetFont("font.ttf", 45f), resource.GetFont("font.ttf", 60), };
 
-	public static final MSSprite STAGES[] = { new MSSprite("img/Stages/Stage01.png"), };
+	public static final MSSound WAV_DIE = new MSSound("wav/die.wav");
+	public static final MSSound WAV_MOVE = new MSSound("wav/move.wav");
 
-	public static final MSSprite STAGE_LIGHTS[] = { new MSSprite("img/Stages/Stage01Light.png"), };
+	public static final MSSprite STAGE_SELECT[] = { new MSSprite("img/chapter1StageSelect.png"), };
+
+	public static final MSSprite STAGES[] = { new MSSprite("img/Stages/Stage01.png"),
+			new MSSprite("img/Stages/Stage02.png"), };
 
 }

@@ -8,6 +8,7 @@ import com.coconut.tl.state.Game;
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.camera.MSCamera;
 import dev.suback.marshmallow.math.MSMath;
+import dev.suback.marshmallow.transform.MSTrans;
 
 public class Player extends RObject {
 
@@ -24,13 +25,18 @@ public class Player extends RObject {
 	public void Update() {
 		super.Update();
 
-		if (MSMath.GetDistance(Game.stage.clearPosition, position) <= Game.MS / 5) {
-			if (!Game.stage.cleared && Game.recordSystem.run) {
+		if (MSMath.GetDistance(new MSTrans(Game.timelines.get(0).startX, Game.timelines.get(0).startY),
+				position) <= Game.MS / 2) {
+			Game.playerPositionReset = true;
+		}
+
+		if (MSMath.GetDistance(Game.stage.clearPosition, position) <= 2) {
+			if (!Game.stage.cleared && Game.recordSystem.run && Game.playerPositionReset) {
 				Game.stage.cleared = true;
 
 				MSCamera.position.Translate((int) Math.round(Math.random() * 30) - 15,
 						(int) Math.round(Math.random() * 30) - 15, 0.1);
-				
+
 				for (int i = 0; i < (int) Math.round(Math.random() * 3) + 4; i++)
 					Game.particles.add(new ClearParticle((int) position.GetX(), (int) position.GetY()));
 			}
