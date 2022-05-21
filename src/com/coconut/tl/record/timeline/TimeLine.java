@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.coconut.tl.objects.Player;
 import com.coconut.tl.objects.RObject;
 import com.coconut.tl.objects.Rock;
+import com.coconut.tl.objects.tile.DirectionPad;
+import com.coconut.tl.objects.tile.MovementPad;
 import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.object.MSObject;
@@ -21,8 +23,9 @@ public class TimeLine {
 	public boolean _reset = false;
 	public int startX, startY, startDir;
 	public MSTrans backPosition = new MSTrans(0, 0);
+	public boolean switched = true;
 
-	private boolean playerTimeLine = false;
+	private boolean playerTimeLine = true;
 
 	public TimeLine(int lineIndex, String object, int x, int y, int dir, boolean playerTimeLine) {
 		initBundle();
@@ -41,26 +44,53 @@ public class TimeLine {
 		else
 			createPlayer();
 	}
+	
+	public TimeLine(int lineIndex, String object, int x, int y, int dir, boolean playerTimeLine, boolean switched) {
+		initBundle();
+		
+		this.playerTimeLine = playerTimeLine;
+		replayObjectTargetPosition.SetTransform(startX, startY);
+		
+		this.lineIndex = lineIndex;
+		this.startDir = dir;
+		this.startX = x;
+		this.startY = y;
+		this.object = object;
+		this.switched = switched;
+		
+		if (!playerTimeLine)
+			createInitOwnerObject();
+		else
+			createPlayer();
+	}
 
-	private void createFullMoveNodes() {
+	private void createFullMoveNodes(String dataType) {
 		if (Game.stage != null && Game.stage.playerNodeSize != 0)
 			if (bundles.get(0).nodes.size() < Game.stage.playerNodeSize)
 				for (int i = 0; i < Game.stage.playerNodeSize; i++)
-					bundles.get(0).nodes.add(new TimeNode("move"));
+					bundles.get(0).nodes.add(new TimeNode(dataType));
 	}
 
 	public void createPlayer() {
 		this.ownerObject = new Player(startDir, startX, startY, this);
 		this.replayObjectTargetPosition.SetTransform(startX, startY);
-		createFullMoveNodes();
+		createFullMoveNodes("move");
 	}
 
 	public void createInitOwnerObject() {
 		if (object.equals("rock")) {
 			this.ownerObject = new Rock(startDir, startX, startY, this);
-			
-			//nodes
-			createFullMoveNodes();
+			createFullMoveNodes("move");
+		}
+		if (object.equals("directionpad")) {
+			this.ownerObject = new DirectionPad(startDir, startX, startY, this);
+			createFullMoveNodes("switch");
+			this.ownerObject.switched = switched;
+		}
+		if (object.equals("movementpad")) {
+			this.ownerObject = new MovementPad(startDir, startX, startY, this);
+			createFullMoveNodes("switch");
+			this.ownerObject.switched = switched;
 		}
 		this.replayObjectTargetPosition.SetTransform(startX, startY);
 	}
@@ -68,6 +98,14 @@ public class TimeLine {
 	public void createOwnerObject() {
 		if (object.equals("rock")) {
 			this.ownerObject = new Rock(startDir, startX, startY, this);
+		}
+		if (object.equals("directionpad")) {
+			this.ownerObject = new DirectionPad(startDir, startX, startY, this);
+			this.ownerObject.switched = switched;
+		}
+		if (object.equals("movementpad")) {
+			this.ownerObject = new MovementPad(startDir, startX, startY, this);
+			this.ownerObject.switched = switched;
 		}
 		this.replayObjectTargetPosition.SetTransform(startX, startY);
 	}

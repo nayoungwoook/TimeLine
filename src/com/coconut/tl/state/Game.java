@@ -8,6 +8,8 @@ import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.ClearDust;
 import com.coconut.tl.effect.transition.Transition;
 import com.coconut.tl.objects.Rock;
+import com.coconut.tl.objects.tile.DirectionPad;
+import com.coconut.tl.objects.tile.MovementPad;
 import com.coconut.tl.objects.tile.Tile;
 import com.coconut.tl.record.RecordSystem;
 import com.coconut.tl.record.timeline.TimeBundle;
@@ -394,6 +396,12 @@ public class Game implements MSState {
 					if (timelines.get(i).ownerObject.getClass() == Rock.class) {
 						((Rock) timelines.get(i).ownerObject).checkInGameCollision();
 					}
+					if (timelines.get(i).ownerObject.getClass() == DirectionPad.class) {
+						((DirectionPad) timelines.get(i).ownerObject).checkInGameCollision();
+					}
+					if (timelines.get(i).ownerObject.getClass() == MovementPad.class) {
+						((MovementPad) timelines.get(i).ownerObject).checkInGameCollision();
+					}
 				}
 			}
 
@@ -405,7 +413,8 @@ public class Game implements MSState {
 
 			for (int i = 0; i < timelines.size(); i++) {
 				if (timelines.get(i).ownerObject != null) {
-					timelines.get(i).ownerObject.turn("move");
+					timelines.get(i).ownerObject.turn(
+							timelines.get(i).getBundleByTime((int) timer).getNodeByTime((int) timer).getDataType());
 				}
 			}
 		}

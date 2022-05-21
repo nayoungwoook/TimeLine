@@ -4,6 +4,8 @@ import java.awt.event.KeyEvent;
 
 import com.coconut.tl.Main;
 import com.coconut.tl.objects.Rock;
+import com.coconut.tl.objects.tile.DirectionPad;
+import com.coconut.tl.objects.tile.MovementPad;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
@@ -44,6 +46,12 @@ public class RecordSystem {
 					if (Game.timelines.get(j).ownerObject.getClass() == Rock.class) {
 						((Rock) Game.timelines.get(j).ownerObject).checkInGameCollision();
 					}
+					if (Game.timelines.get(j).ownerObject.getClass() == DirectionPad.class) {
+						((DirectionPad) Game.timelines.get(j).ownerObject).checkInGameCollision();
+					}
+					if (Game.timelines.get(j).ownerObject.getClass() == MovementPad.class) {
+						((MovementPad) Game.timelines.get(j).ownerObject).checkInGameCollision();
+					}
 				}
 			}
 
@@ -62,10 +70,7 @@ public class RecordSystem {
 							}
 						} else {
 							if (Game.timelines.get(j).ownerObject != null) {
-								if (_node.getDataType().equals("move")) {
-									// move
-									Game.timelines.get(j).ownerObject.turn("move");
-								}
+								Game.timelines.get(j).ownerObject.turn(_node.getDataType());
 							}
 						}
 					}

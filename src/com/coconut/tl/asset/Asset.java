@@ -13,7 +13,17 @@ public class Asset {
 			new MSSprite("img/tile.png").CutImage(16 * 2, 0, 16, 16),
 			new MSSprite("img/tile.png").CutImage(16 * 3, 0, 16, 16),
 			new MSSprite("img/tile.png").CutImage(16 * 4, 0, 16, 16),
-			new MSSprite("img/tile.png").CutImage(16 * 5, 0, 16, 16), };
+			new MSSprite("img/tile.png").CutImage(16 * 5, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 6, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 7, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 8, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 9, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 10, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 11, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 12, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 13, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 14, 0, 16, 16),
+			new MSSprite("img/tile.png").CutImage(16 * 15, 0, 16, 16), };
 
 	public static final MSSprite ROCK = new MSSprite("img/object.png").CutImage(0, 0, 16, 16);
 

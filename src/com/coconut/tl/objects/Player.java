@@ -1,7 +1,9 @@
 package com.coconut.tl.objects;
 
+import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.ClearParticle;
+import com.coconut.tl.effect.DieParticle;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.state.Game;
 
@@ -25,7 +27,27 @@ public class Player extends RObject {
 	public void Update() {
 		super.Update();
 
-		if (MSMath.GetDistance(new MSTrans(Game.timelines.get(0).startX, Game.timelines.get(0).startY),
+		if (position.GetY() < 0) {
+			timeline.ownerObject = null;
+			if (Game.recordSystem.run) {
+				for (int j = 0; j < (int) Math.round(Math.random() * 5) + 5; j++) {
+					Game.particles.add(new DieParticle((int) simulatedPosition.GetX(), (int) simulatedPosition.GetY()));
+				}
+
+				Asset.WAV_DIE.play();
+			}
+
+			Main.game.playerDied = true;
+			Main.game.playerDiedPosition.SetTransform(simulatedPosition.GetX(), simulatedPosition.GetY());
+
+			if ((Game.gameState == 1 && Game.recordSystem.run) || Game.gameState == 0)
+				Main.game.playerDie();
+
+		}
+
+		System.out.println((int) MSMath.GetDistance(new MSTrans(Game.timelines.get(0).startX, Game.timelines.get(0).startY),
+				position));
+		if ((int) MSMath.GetDistance(new MSTrans(Game.timelines.get(0).startX, Game.timelines.get(0).startY),
 				position) <= Game.MS / 2) {
 			Game.playerPositionReset = true;
 		}
@@ -33,7 +55,6 @@ public class Player extends RObject {
 		if (MSMath.GetDistance(Game.stage.clearPosition, position) <= 2) {
 			if (!Game.stage.cleared && Game.recordSystem.run && Game.playerPositionReset) {
 				Game.stage.cleared = true;
-
 				MSCamera.position.Translate((int) Math.round(Math.random() * 30) - 15,
 						(int) Math.round(Math.random() * 30) - 15, 0.1);
 

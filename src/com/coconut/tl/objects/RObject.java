@@ -13,9 +13,11 @@ import dev.suback.marshmallow.transform.MSTrans;
 public class RObject extends MSObject {
 
 	private int direction = -1;
-	protected MSTrans targetPosition;
+	public MSTrans targetPosition;
 	public MSTrans simulatedPosition;
+	public boolean switched = true;
 	protected TimeLine timeline;
+	public boolean movementPad = false;
 
 	public RObject(int direction, int x, int y, TimeLine timeline) {
 		super(x, y, Game.MS, Game.MS);
@@ -32,38 +34,57 @@ public class RObject extends MSObject {
 
 		position.Translate(_cxv, _cyv);
 	}
+	
+	protected void setRotateDir() {
+		if (getDirection() == 0)
+			SetRotation(0);
+		if (getDirection() == 1)
+			SetRotation((float) Math.toRadians(-90));
+		if (getDirection() == 2)
+			SetRotation((float) Math.toRadians(-180));
+		if (getDirection() == 3)
+			SetRotation((float) Math.toRadians(-270));
+	}
 
 	public void turn(String dataType) {
-
 		if (dataType.equals("move")) {
-			if (direction == 0)
-				targetPosition.Translate(0, -Game.MS);
-			if (direction == 1)
-				targetPosition.Translate(-Game.MS, 0);
-			if (direction == 2)
-				targetPosition.Translate(0, Game.MS);
-			if (direction == 3)
-				targetPosition.Translate(Game.MS, 0);
+			if (!movementPad) {
+				if (direction == 0)
+					targetPosition.Translate(0, -Game.MS);
+				if (direction == 1)
+					targetPosition.Translate(-Game.MS, 0);
+				if (direction == 2)
+					targetPosition.Translate(0, Game.MS);
+				if (direction == 3)
+					targetPosition.Translate(Game.MS, 0);
+			}else {
+				movementPad = false;
+			}
+
+			TimeBundle _bundle = timeline.getBundleByTime(Game.recordSystem.getTimer());
+			TimeNode _node = null;
+			if (_bundle != null)
+				_node = _bundle.getNodeByTime(Game.recordSystem.getTimer());
+
+			if ((Game.gameState == 1 && Game.recordSystem.run && _node != null
+					&& (Game.recordSystem.getTimer() == Main.game.replayTimer)) || Game.gameState == 0) {
+				Game.particles.add(new DustParticle((int) position.GetX() + (int) Math.round(Math.random() * 20) - 10,
+						(int) position.GetY() + (int) Math.round(Math.random() * 20) - 10));
+			}
+		}
+
+		if (dataType.equals("switch")) {
+			switched = !switched;
 		}
 
 		simulatedPosition.SetTransform(targetPosition.GetX(), targetPosition.GetY());
 
-		TimeBundle _bundle = timeline.getBundleByTime(Game.recordSystem.getTimer());
-		TimeNode _node = null;
-		if (_bundle != null)
-			_node = _bundle.getNodeByTime(Game.recordSystem.getTimer());
-
-		if ((Game.gameState == 1 && Game.recordSystem.run && _node != null
-				&& (Game.recordSystem.getTimer() == Main.game.replayTimer)) || Game.gameState == 0) {
-			Game.particles.add(new DustParticle((int) position.GetX() + (int) Math.round(Math.random() * 20) - 10,
-					(int) position.GetY() + (int) Math.round(Math.random() * 20) - 10));
-		}
 	}
-	
+
 	public void setDirection(int dir) {
 		this.direction = dir;
 	}
-	
+
 	public int getDirection() {
 		return direction;
 	}

@@ -8,11 +8,11 @@ import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.math.MSMath;
 
-public class DirectionPad extends RObject {
+public class MovementPad extends RObject {
 
-	public DirectionPad(int dir, int x, int y, TimeLine timeline) {
+	public MovementPad(int dir, int x, int y, TimeLine timeline) {
 		super(dir, x, y, timeline);
-		SetSprite(Asset.DUNGEON_TILE[14]);
+		SetSprite(Asset.DUNGEON_TILE[15]);
 		position.SetZ(1.9);
 	}
 
@@ -20,7 +20,7 @@ public class DirectionPad extends RObject {
 	public void Update() {
 		super.Update();
 		setRotateDir();
-		
+
 		if (!switched) {
 			super.SetBrightness(-150);
 		} else {
@@ -38,12 +38,21 @@ public class DirectionPad extends RObject {
 						if (Game.recordSystem.run) {
 							// effect
 						}
-						if (switched)
-							_obj.setDirection(getDirection());
+
+						if (switched) {
+							_obj.movementPad = true;
+							if (getDirection() == 0)
+								_obj.targetPosition.Translate(0, -Game.MS);
+							if (getDirection() == 1)
+								_obj.targetPosition.Translate(-Game.MS, 0);
+							if (getDirection() == 2)
+								_obj.targetPosition.Translate(0, Game.MS);
+							if (getDirection() == 3)
+								_obj.targetPosition.Translate(Game.MS, 0);
+						}
 					}
 				}
 			}
 		}
 	}
-
 }
