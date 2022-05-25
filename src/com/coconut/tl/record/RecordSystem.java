@@ -3,9 +3,6 @@ package com.coconut.tl.record;
 import java.awt.event.KeyEvent;
 
 import com.coconut.tl.Main;
-import com.coconut.tl.objects.Rock;
-import com.coconut.tl.objects.tile.DirectionPad;
-import com.coconut.tl.objects.tile.MovementPad;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
@@ -29,10 +26,12 @@ public class RecordSystem {
 
 		Main.game.playerDied = false;
 		for (int j = 0; j < Game.timelines.size(); j++) {
+
 			if (Game.timelines.get(j).ownerObject != null) {
 				Game.timelines.get(j).backPosition.SetTransform(Game.timelines.get(j).ownerObject.position.GetX(),
 						Game.timelines.get(j).ownerObject.position.GetY());
 			}
+
 			Game.timelines.get(j)._reset = false;
 			Game.timelines.get(j).ownerObject = null;
 		}
@@ -41,19 +40,8 @@ public class RecordSystem {
 
 			Main.game.replayTimer = i;
 			// 리플레이 전에 충돌 체킹
-			for (int j = 0; j < Game.timelines.size(); j++) {
-				if (Game.timelines.get(j).ownerObject != null) {
-					if (Game.timelines.get(j).ownerObject.getClass() == Rock.class) {
-						((Rock) Game.timelines.get(j).ownerObject).checkInGameCollision();
-					}
-					if (Game.timelines.get(j).ownerObject.getClass() == DirectionPad.class) {
-						((DirectionPad) Game.timelines.get(j).ownerObject).checkInGameCollision();
-					}
-					if (Game.timelines.get(j).ownerObject.getClass() == MovementPad.class) {
-						((MovementPad) Game.timelines.get(j).ownerObject).checkInGameCollision();
-					}
-				}
-			}
+			if (Main.game != null)
+				Main.game.checkCollision();
 
 			for (int j = 0; j < Game.timelines.size(); j++) {
 
@@ -73,6 +61,13 @@ public class RecordSystem {
 								Game.timelines.get(j).ownerObject.turn(_node.getDataType());
 							}
 						}
+					}
+				}
+
+				if (_bundle == null) {
+					if (Game.timelines.get(j).getObject().equals("directionpad")
+							|| Game.timelines.get(j).getObject().equals("movementpad")) {
+						Game.timelines.get(j).createOwnerObject();
 					}
 				}
 

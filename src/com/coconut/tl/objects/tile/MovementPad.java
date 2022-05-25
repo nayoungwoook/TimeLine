@@ -10,7 +10,7 @@ import dev.suback.marshmallow.math.MSMath;
 
 public class MovementPad extends RObject {
 
-	public MovementPad(int dir, int x, int y, TimeLine timeline) {
+	public MovementPad(RObject.Directions dir, int x, int y, TimeLine timeline) {
 		super(dir, x, y, timeline);
 		SetSprite(Asset.DUNGEON_TILE[15]);
 		position.SetZ(1.9);
@@ -41,13 +41,13 @@ public class MovementPad extends RObject {
 
 						if (switched) {
 							_obj.movementPad = true;
-							if (getDirection() == 0)
+							if (direction == RObject.Directions.UP)
 								_obj.targetPosition.Translate(0, -Game.MS);
-							if (getDirection() == 1)
+							if (direction == RObject.Directions.LEFT)
 								_obj.targetPosition.Translate(-Game.MS, 0);
-							if (getDirection() == 2)
+							if (direction == RObject.Directions.DOWN)
 								_obj.targetPosition.Translate(0, Game.MS);
-							if (getDirection() == 3)
+							if (direction == RObject.Directions.RIGHT)
 								_obj.targetPosition.Translate(Game.MS, 0);
 						}
 					}

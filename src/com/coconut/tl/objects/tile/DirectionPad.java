@@ -10,7 +10,7 @@ import dev.suback.marshmallow.math.MSMath;
 
 public class DirectionPad extends RObject {
 
-	public DirectionPad(int dir, int x, int y, TimeLine timeline) {
+	public DirectionPad(RObject.Directions dir, int x, int y, TimeLine timeline) {
 		super(dir, x, y, timeline);
 		SetSprite(Asset.DUNGEON_TILE[14]);
 		position.SetZ(1.9);
@@ -35,11 +35,13 @@ public class DirectionPad extends RObject {
 			if (_obj != null && _obj != this) {
 				if (MSMath.GetDistance(_obj.simulatedPosition, simulatedPosition) <= 2) {
 					if (_obj.getClass().equals(Player.class)) {
+						
 						if (Game.recordSystem.run) {
 							// effect
 						}
+						
 						if (switched)
-							_obj.setDirection(getDirection());
+							_obj.direction = direction;
 					}
 				}
 			}

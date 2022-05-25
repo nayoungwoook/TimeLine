@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
 import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.ClearParticle;
@@ -57,12 +59,20 @@ public class StageSelect implements MSState {
 	@Override
 	public void Render() {
 
+		JSONObject obj = Main.langManager.langData;
+
 		MSShape.SetColor(new Color(255, 255, 255));
 		MSShape.SetFont(Asset.FONT[3]);
-		MSShape.RenderText("chapter 1 - \" DUNGEON \" ", MSDisplay.width / 2, 100, 3);
+		MSShape.RenderText(obj.getJSONObject("CHAPTERS").getString("1"), MSDisplay.width / 2, 100, 3);
 
 		MSShape.SetFont(Asset.FONT[1]);
-		MSShape.RenderText("press space to enter", MSDisplay.width / 2, 130, 3);
+		MSShape.RenderText(obj.getString("PRESS_SPACE"), MSDisplay.width / 2, 130, 3);
+
+		MSShape.RenderImage(Asset.UI_CLEAR_MARKER, (int) waypoint[0].GetX(), (int) waypoint[0].GetY(), 2, Game.MS,
+				Game.MS);
+
+		MSShape.SetColor(new Color(20, 20, 20, 220));
+		MSShape.RenderRect((int) waypoint[1].GetX(), (int) waypoint[1].GetY(), 2, Game.MS, Game.MS);
 
 		for (int i = 0; i < particles.size(); i++)
 			particles.get(i).Render();
@@ -85,8 +95,8 @@ public class StageSelect implements MSState {
 				Game.MS);
 
 		// CURSOR
-		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX(), (int) MSInput.mousePointer.GetY(), 3,
-				70, 70);
+		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX(), (int) MSInput.mousePointer.GetY(),
+				10, 70, 70);
 	}
 
 	private double timer = 0;

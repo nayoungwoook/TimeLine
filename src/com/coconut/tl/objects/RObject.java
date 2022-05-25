@@ -12,14 +12,22 @@ import dev.suback.marshmallow.transform.MSTrans;
 
 public class RObject extends MSObject {
 
-	private int direction = -1;
+	public static enum Directions {
+		UP, LEFT, DOWN, RIGHT, NULL;
+	};
+
+	public static enum Module {
+		MOVE, SWITCH
+	}
+
+	public Directions direction = Directions.UP;
 	public MSTrans targetPosition;
 	public MSTrans simulatedPosition;
 	public boolean switched = true;
 	protected TimeLine timeline;
 	public boolean movementPad = false;
 
-	public RObject(int direction, int x, int y, TimeLine timeline) {
+	public RObject(RObject.Directions direction, int x, int y, TimeLine timeline) {
 		super(x, y, Game.MS, Game.MS);
 		this.direction = direction;
 		this.timeline = timeline;
@@ -29,35 +37,35 @@ public class RObject extends MSObject {
 
 	@Override
 	public void Update() {
-		double _cxv = (targetPosition.GetX() - position.GetX()) / 6,
-				_cyv = (targetPosition.GetY() - position.GetY()) / 6;
+		double _cxv = (targetPosition.GetX() - position.GetX()) / 4,
+				_cyv = (targetPosition.GetY() - position.GetY()) / 4;
 
 		position.Translate(_cxv, _cyv);
 	}
-	
+
 	protected void setRotateDir() {
-		if (getDirection() == 0)
+		if (direction == Directions.UP)
 			SetRotation(0);
-		if (getDirection() == 1)
+		if (direction == Directions.LEFT)
 			SetRotation((float) Math.toRadians(-90));
-		if (getDirection() == 2)
+		if (direction == Directions.DOWN)
 			SetRotation((float) Math.toRadians(-180));
-		if (getDirection() == 3)
+		if (direction == Directions.RIGHT)
 			SetRotation((float) Math.toRadians(-270));
 	}
 
-	public void turn(String dataType) {
-		if (dataType.equals("move")) {
+	public void turn(RObject.Module dataType) {
+		if (dataType.equals(RObject.Module.MOVE)) {
 			if (!movementPad) {
-				if (direction == 0)
+				if (direction == Directions.UP)
 					targetPosition.Translate(0, -Game.MS);
-				if (direction == 1)
+				if (direction == Directions.LEFT)
 					targetPosition.Translate(-Game.MS, 0);
-				if (direction == 2)
+				if (direction == Directions.DOWN)
 					targetPosition.Translate(0, Game.MS);
-				if (direction == 3)
+				if (direction == Directions.RIGHT)
 					targetPosition.Translate(Game.MS, 0);
-			}else {
+			} else {
 				movementPad = false;
 			}
 
@@ -73,20 +81,12 @@ public class RObject extends MSObject {
 			}
 		}
 
-		if (dataType.equals("switch")) {
+		if (dataType.equals(RObject.Module.SWITCH)) {
 			switched = !switched;
 		}
 
 		simulatedPosition.SetTransform(targetPosition.GetX(), targetPosition.GetY());
 
-	}
-
-	public void setDirection(int dir) {
-		this.direction = dir;
-	}
-
-	public int getDirection() {
-		return direction;
 	}
 
 }

@@ -17,7 +17,7 @@ public class Player extends RObject {
 	protected final int CONST_OF_TILE_X = MSDisplay.width / 2 - Game.MS * 24 / 2 + Game.MS / 2,
 			CONST_OF_TILE_Y = MSDisplay.height / 2 - Game.MS * 13 / 2 + Game.MS / 2;
 
-	public Player(int dir, int x, int y, TimeLine timeline) {
+	public Player(RObject.Directions dir, int x, int y, TimeLine timeline) {
 		super(dir, x, y, timeline);
 		SetSprite(Asset.PLAYER);
 		position.SetZ(2);
@@ -45,8 +45,6 @@ public class Player extends RObject {
 
 		}
 
-		System.out.println((int) MSMath.GetDistance(new MSTrans(Game.timelines.get(0).startX, Game.timelines.get(0).startY),
-				position));
 		if ((int) MSMath.GetDistance(new MSTrans(Game.timelines.get(0).startX, Game.timelines.get(0).startY),
 				position) <= Game.MS / 2) {
 			Game.playerPositionReset = true;

@@ -4,6 +4,9 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
+import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.ClearDust;
 import com.coconut.tl.effect.transition.Transition;
@@ -206,10 +209,10 @@ public class Game implements MSState {
 			MSShape.SetColor(new Color(255, 255, 255));
 			MSShape.SetFont(Asset.FONT[2]);
 
-			if (stageIndex == 1)
-				MSShape.RenderText("stage 01 - let's start", MSDisplay.width / 2, MSDisplay.height / 2, 5);
-			else if (stageIndex == 2)
-				MSShape.RenderText("stage 02 - Moves Like Jagger", MSDisplay.width / 2, MSDisplay.height / 2, 5);
+			JSONObject obj = Main.langManager.langData;
+
+			MSShape.RenderText(obj.getJSONObject("STAGES").getString(stageIndex + ""), MSDisplay.width / 2,
+					MSDisplay.height / 2, 5);
 		}
 
 		stage.render();
@@ -352,7 +355,8 @@ public class Game implements MSState {
 		if (turnTimer >= 1) {
 			turnTimer = 0;
 
-			if (!Game.stage.cleared && Game.recordSystem.run && Game.playerPositionReset && this.awaitTimer >= 0.1)
+			if (!Game.stage.cleared && Game.recordSystem.run && Game.playerPositionReset && this.awaitTimer >= 0.1
+					&& playerPositionReset)
 				Asset.WAV_MOVE.play();
 
 			if (recordSystem != null) {
@@ -387,23 +391,28 @@ public class Game implements MSState {
 			recordSystem.runTimer();
 	}
 
+	public void checkCollision() {
+
+		// 업데이트 하고 미리 충돌 체킹 (레코딩 부분)
+		for (int i = 0; i < timelines.size(); i++) {
+			if (timelines.get(i).ownerObject != null) {
+				if (timelines.get(i).ownerObject.getClass() == Rock.class) {
+					((Rock) timelines.get(i).ownerObject).checkInGameCollision();
+				}
+				if (timelines.get(i).ownerObject.getClass() == DirectionPad.class) {
+					((DirectionPad) timelines.get(i).ownerObject).checkInGameCollision();
+				}
+				if (timelines.get(i).ownerObject.getClass() == MovementPad.class) {
+					((MovementPad) timelines.get(i).ownerObject).checkInGameCollision();
+				}
+			}
+		}
+	}
+
 	public void updateRecordTurn() {
 		if (recordSystem.isRecording()) {
 
-			// 업데이트 하고 미리 충돌 체킹 (레코딩 부분)
-			for (int i = 0; i < timelines.size(); i++) {
-				if (timelines.get(i).ownerObject != null) {
-					if (timelines.get(i).ownerObject.getClass() == Rock.class) {
-						((Rock) timelines.get(i).ownerObject).checkInGameCollision();
-					}
-					if (timelines.get(i).ownerObject.getClass() == DirectionPad.class) {
-						((DirectionPad) timelines.get(i).ownerObject).checkInGameCollision();
-					}
-					if (timelines.get(i).ownerObject.getClass() == MovementPad.class) {
-						((MovementPad) timelines.get(i).ownerObject).checkInGameCollision();
-					}
-				}
-			}
+			checkCollision();
 
 			recordSystem.record();
 

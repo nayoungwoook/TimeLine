@@ -170,7 +170,13 @@ public class TimeBundle {
 							}
 						}
 					}
+					
 				}
+
+				if (startPosition < 0)
+					startPosition = backStartPosition;
+				if (startPosition + nodes.size() - 1 > 8 * (Game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3))
+					startPosition = backStartPosition;
 
 				moveClickStartPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;
 			}

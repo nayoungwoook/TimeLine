@@ -3,6 +3,8 @@ package com.coconut.tl.state;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import org.json.JSONObject;
+
 import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.transition.Transition;
@@ -46,9 +48,11 @@ public class Title implements MSState {
 		} else {
 			MSShape.SetColor(new Color(155, 155, 155));
 		}
-
+		
+		JSONObject obj = Main.langManager.langData;
+		
 		MSShape.SetFont(Asset.FONT[2]);
-		MSShape.RenderText("start game", MSDisplay.width / 7, MSDisplay.height / 3 * 2, 3);
+		MSShape.RenderText(obj.getString("START_GAME"), MSDisplay.width / 7, MSDisplay.height / 3 * 2, 3);
 
 		if (Math.abs(MSDisplay.height / 3 * 2 - MSInput.mousePointer.GetY() + 60) <= 20) {
 			MSShape.SetColor(new Color(255, 255, 255));
@@ -57,7 +61,7 @@ public class Title implements MSState {
 		}
 
 		MSShape.SetFont(Asset.FONT[2]);
-		MSShape.RenderText("setting", MSDisplay.width / 7, MSDisplay.height / 3 * 2 + 50, 3);
+		MSShape.RenderText(obj.getString("SETTING"), MSDisplay.width / 7, MSDisplay.height / 3 * 2 + 50, 3);
 
 		if (Math.abs(MSDisplay.height / 3 * 2 - MSInput.mousePointer.GetY() + 110) <= 20) {
 			MSShape.SetColor(new Color(255, 255, 255));
@@ -66,7 +70,7 @@ public class Title implements MSState {
 		}
 
 		MSShape.SetFont(Asset.FONT[2]);
-		MSShape.RenderText("credit", MSDisplay.width / 7, MSDisplay.height / 3 * 2 + 100, 3);
+		MSShape.RenderText(obj.getString("CREDIT"), MSDisplay.width / 7, MSDisplay.height / 3 * 2 + 100, 3);
 
 		for (int i = 0; i < transitions.size(); i++)
 			transitions.get(i).Render();

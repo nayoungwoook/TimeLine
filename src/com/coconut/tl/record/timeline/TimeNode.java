@@ -1,14 +1,16 @@
 package com.coconut.tl.record.timeline;
 
+import com.coconut.tl.objects.RObject;
+
 public class TimeNode {
 
-	private String dataType = "";
+	private RObject.Module dataType;
 
-	public TimeNode(String dataType) {
+	public TimeNode(RObject.Module dataType) {
 		this.dataType = dataType;
 	}
 
-	public String getDataType() {
+	public RObject.Module getDataType() {
 		return dataType;
 	}
 
