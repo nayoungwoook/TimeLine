@@ -120,10 +120,13 @@ public class Asset {
 
 	public static final MSSound WAV_DIE = new MSSound("wav/die.wav");
 	public static final MSSound WAV_MOVE = new MSSound("wav/move.wav");
+	public static final MSSound WAV_UI_MOVE = new MSSound("wav/uimove.wav");
 
 	public static final MSSprite STAGE_SELECT[] = { new MSSprite("img/chapter1StageSelect.png"), };
 
 	public static final MSSprite STAGES[] = { new MSSprite("img/Stages/Stage01.png"),
 			new MSSprite("img/Stages/Stage02.png"), };
+
+	public static final MSSprite STAGE_COLS[] = { null, new MSSprite("img/Stages/Stage02Col.png"), };
 
 }

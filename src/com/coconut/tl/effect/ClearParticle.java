@@ -14,7 +14,7 @@ public class ClearParticle extends MSObject {
 
 	public ClearParticle(int x, int y) {
 		super(x, y, Game.MS, Game.MS);
-		position.SetZ(2);
+		position.SetZ(4);
 		SetSprite(Asset.CLEAR_DUST[0]);
 
 		rotV = Math.round(Math.random() * 10) - 5;

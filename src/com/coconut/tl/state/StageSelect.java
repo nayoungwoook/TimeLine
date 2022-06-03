@@ -42,8 +42,33 @@ public class StageSelect implements MSState {
 			new MSTrans(Game.MS / 2 + 5 + (MSDisplay.width / 24) * 17,
 					Game.MS / 2 + 11 + (MSDisplay.width / 24 + 1) * 6), };
 
+	private int lockedOnMaxStageIndex = 0;
+	public boolean[] stageCleared = new boolean[5];
+
+	private void getLockedOnStageIndex() {
+		Main.saveLoader.readSaveFile();
+		JSONObject data = Main.saveLoader.saveData.getJSONObject("CLEAR");
+
+		for (int i = 0; i < data.length(); i++) {
+			if (data.getBoolean((i + 1) + "")) {
+				stageCleared[i] = true;
+				if (i + 1 < stageCleared.length)
+					lockedOnMaxStageIndex = i + 1;
+			} else {
+				stageCleared[i] = false;
+			}
+		}
+
+	}
+
 	@Override
 	public void Init() {
+		
+		transitions.clear();
+		particles.clear();
+		
+		getLockedOnStageIndex();
+
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 9; j++) {
 				transitions.add(new Transition(transitions, true, (i - 1) * Game.MS * 2, Game.MS * 2 * (j - 1)));
@@ -68,18 +93,24 @@ public class StageSelect implements MSState {
 		MSShape.SetFont(Asset.FONT[1]);
 		MSShape.RenderText(obj.getString("PRESS_SPACE"), MSDisplay.width / 2, 130, 3);
 
-		MSShape.RenderImage(Asset.UI_CLEAR_MARKER, (int) waypoint[0].GetX(), (int) waypoint[0].GetY(), 2, Game.MS,
-				Game.MS);
+		for (int i = 0; i < stageCleared.length; i++) {
+			if (!stageCleared[i] && this.lockedOnMaxStageIndex != i) {
+				MSShape.SetColor(new Color(20, 20, 20, 220));
+				MSShape.RenderRect((int) waypoint[i].GetX(), (int) waypoint[i].GetY(), 2, Game.MS, Game.MS);
+			}
 
-		MSShape.SetColor(new Color(20, 20, 20, 220));
-		MSShape.RenderRect((int) waypoint[1].GetX(), (int) waypoint[1].GetY(), 2, Game.MS, Game.MS);
+			if (stageCleared[i])
+				MSShape.RenderImage(Asset.UI_CLEAR_MARKER, (int) waypoint[i].GetX(), (int) waypoint[i].GetY(), 2,
+						Game.MS, Game.MS);
+		}
 
 		for (int i = 0; i < particles.size(); i++)
 			particles.get(i).Render();
 
 		if (awaitTimer < 0.1) {
 			MSShape.SetColor(new Color(0, 0, 0));
-			MSShape.RenderRect(MSDisplay.width / 2, MSDisplay.height / 2, 3, MSDisplay.width * 2, MSDisplay.height * 2);
+			MSShape.RenderRect(MSDisplay.width / 2, MSDisplay.height / 2, 3, MSDisplay.width * 2 + 2,
+					MSDisplay.height * 2 + 2);
 		}
 
 		for (int i = 0; i < transitions.size(); i++)

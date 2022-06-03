@@ -21,6 +21,7 @@ import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.stages.Stage;
 import com.coconut.tl.stages.Stage01;
 import com.coconut.tl.stages.Stage02;
+import com.coconut.tl.stages.Stage03;
 
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.camera.MSCamera;
@@ -35,36 +36,57 @@ public class Game implements MSState {
 
 	public static final int MS = 50;
 
-	public static MSTrans targetCPosition = new MSTrans(0, 0, 1);
+	public MSTrans targetCPosition = new MSTrans(0, 0, 1);
 
-	public static RecordSystem recordSystem;
+	public RecordSystem recordSystem;
 
 	public static ArrayList<Tile> tiles = new ArrayList<>();
 	public static ArrayList<MSObject> particles = new ArrayList<>();
 	public static ArrayList<TimeLine> timelines = new ArrayList<>();
 	public static ArrayList<Transition> transitions = new ArrayList<>();
 
-	public static int gameState = 0;
-	public static int tool = 0;
-	public static MSSprite cursorImage;
-	public static Stage stage;
+	public int gameState = 0;
+	public int tool = 0;
+	public MSSprite cursorImage;
+	public Stage stage;
 
-	public static boolean playerPositionReset = false;
+	public boolean playerPositionReset = false;
 
 	// 스테이트 전환후, 기다리는 타이머
 	private double awaitTimer = 0;
 
-	public static boolean _backupPlayerDied = false;
+	public boolean _backupPlayerDied = false;
 
 	public boolean playerDied = false;
 	public MSTrans playerDiedPosition = new MSTrans(0, 0);
 
-	private int stageIndex = 1, chapter = 0;
+	public int stageIndex = 1, chapter = 0;
 	private boolean stageStarted = false;
 
 	public Game(int stageIndex, int chapter) {
 		this.stageIndex = stageIndex;
 		this.chapter = chapter;
+
+		tiles.clear();
+		particles.clear();
+		timelines.clear();
+		transitions.clear();
+	}
+
+	private void setStage(int stageIndex) {
+		if (chapter == 1) {
+			switch (stageIndex) {
+			case 1:
+				stage = new Stage01(this);
+				break;
+			case 2:
+				stage = new Stage02(this);
+				break;
+			case 3:
+				stage = new Stage03(this);
+				break;
+			}
+		}
 	}
 
 	@Override
@@ -75,16 +97,7 @@ public class Game implements MSState {
 
 		recordSystem = new RecordSystem();
 
-		if (chapter == 1) {
-			switch (stageIndex) {
-			case 1:
-				stage = new Stage01(this);
-				break;
-			case 2:
-				stage = new Stage02(this);
-				break;
-			}
-		}
+		setStage(stageIndex);
 
 		stage.stageStarted();
 
@@ -169,15 +182,15 @@ public class Game implements MSState {
 			MSShape.RenderUIImage(Asset.UI_BUTTON[3], x, y, 3, MS, MS);
 		}
 
-		return Math.abs(MSInput.mousePointer.GetX() - x) / 2 <= Game.MS / 5
-				&& Math.abs(MSInput.mousePointer.GetY() - y) / 2 <= Game.MS / 5 && MSInput.mouseLeft;
+		return Math.abs(MSInput.mousePointer.GetX() - x) / 2 <= MS / 5
+				&& Math.abs(MSInput.mousePointer.GetY() - y) / 2 <= MS / 5 && MSInput.mouseLeft;
 	}
 
 	private void renderUi() {
 
 		if (playerDied) {
 			MSShape.RenderImage(Asset.UI_DIE_MARKER, (int) playerDiedPosition.GetX(), (int) playerDiedPosition.GetY(),
-					3, Game.MS, Game.MS);
+					3, MS, MS);
 		}
 
 		// BUTTON
@@ -212,7 +225,7 @@ public class Game implements MSState {
 			JSONObject obj = Main.langManager.langData;
 
 			MSShape.RenderText(obj.getJSONObject("STAGES").getString(stageIndex + ""), MSDisplay.width / 2,
-					MSDisplay.height / 2, 5);
+					MSDisplay.height / 2, 8);
 		}
 
 		stage.render();
@@ -221,27 +234,39 @@ public class Game implements MSState {
 		MSShape.RenderUIImage(cursorImage, (int) MSInput.mousePointer.GetX() + 15, (int) MSInput.mousePointer.GetY(),
 				10, MS, MS);
 
-		// GAME CLEARED
+		// STAGE CLEARED
 		if (stage.cleared && stage.clearTimer >= 1) {
 			MSShape.SetColor(new Color(20, 20, 20, 150));
 			MSShape.RenderRect(MSDisplay.width / 2, MSDisplay.height / 2, MSDisplay.width * 2, MSDisplay.height * 2);
 
-			MSShape.RenderImage(Asset.UI_STAGE_CLEARED, MSDisplay.width / 2, MSDisplay.height / 2 + 5, 3, Game.MS * 8,
-					Game.MS);
+			MSShape.RenderImage(Asset.UI_STAGE_CLEARED, MSDisplay.width / 2, MSDisplay.height / 2 + 5, 3, MS * 8, MS);
 
 			MSShape.SetFont(Asset.FONT[1]);
 
 			int y = MSDisplay.height / 7 * 5;
-			if (Math.abs(y - MSInput.mousePointer.GetY() - 10) <= 15)
+			if (Math.abs(y - MSInput.mousePointer.GetY() - 13) <= 15 && stageIndex + 1 <= 5) {
 				MSShape.SetColor(new Color(255, 255, 255));
-			else
+				if (MSInput.mouseLeft && transitions.size() == 0) {
+					Main.game = new Game(stageIndex + 1, 1);
+					MSState.SetState(Main.game);
+
+					MSInput.mouseLeft = false;
+				}
+			} else {
 				MSShape.SetColor(new Color(155, 155, 155));
+			}
 
 			MSShape.RenderText("next stage", MSDisplay.width / 2, y, 3);
 
 			y = MSDisplay.height / 7 * 5 + 40;
-			if (Math.abs(y - MSInput.mousePointer.GetY() - 10) <= 15) {
+			if (Math.abs(y - MSInput.mousePointer.GetY() - 13) <= 15) {
 				MSShape.SetColor(new Color(255, 255, 255));
+				if (MSInput.mouseLeft && transitions.size() == 0) {
+					Main.select = new StageSelect();
+					MSState.SetState(Main.select);
+
+					MSInput.mouseLeft = false;
+				}
 			} else {
 				MSShape.SetColor(new Color(155, 155, 155));
 			}
@@ -266,8 +291,8 @@ public class Game implements MSState {
 		if (gameState == 0)
 			recordSystem.changeRecording();
 
-		if (Game.gameState == 1) {
-			Game.recordSystem.run = false;
+		if (gameState == 1) {
+			recordSystem.run = false;
 		}
 	}
 
@@ -337,7 +362,7 @@ public class Game implements MSState {
 
 	// 턴
 	private double turnTimer = 0;
-	public static double turnSpeed = 0.05;
+	public static double turnSpeed = 0.045;
 
 	public void changeGameState(int state) {
 		gameState = state;
@@ -355,8 +380,7 @@ public class Game implements MSState {
 		if (turnTimer >= 1) {
 			turnTimer = 0;
 
-			if (!Game.stage.cleared && Game.recordSystem.run && Game.playerPositionReset && this.awaitTimer >= 0.1
-					&& playerPositionReset)
+			if (!stage.cleared && recordSystem.run && playerPositionReset && this.awaitTimer >= 0.1)
 				Asset.WAV_MOVE.play();
 
 			if (recordSystem != null) {
@@ -407,11 +431,16 @@ public class Game implements MSState {
 				}
 			}
 		}
+
+		if (stage != null) {
+			for (int i = 0; i < stage.colboxes.size(); i++) {
+				stage.colboxes.get(i).checkCollision();
+			}
+		}
 	}
 
 	public void updateRecordTurn() {
 		if (recordSystem.isRecording()) {
-
 			checkCollision();
 
 			recordSystem.record();
@@ -455,10 +484,10 @@ public class Game implements MSState {
 
 			if (!stageStarted) {
 				awaitTimer = 0;
+
 				for (int i = 0; i < 15; i++) {
 					for (int j = 0; j < 9; j++) {
-						transitions
-								.add(new Transition(transitions, true, (i - 1) * Game.MS * 2, Game.MS * 2 * (j - 1)));
+						transitions.add(new Transition(transitions, true, (i - 1) * MS * 2, MS * 2 * (j - 1)));
 					}
 				}
 			}

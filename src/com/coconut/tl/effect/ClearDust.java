@@ -13,7 +13,7 @@ public class ClearDust extends MSObject {
 
 	public ClearDust(int x, int y) {
 		super(x, y, Game.MS * 2, Game.MS * 2);
-		position.SetZ(2);
+		position.SetZ(3);
 		SetSprite(Asset.CLEAR_DUST[0]);
 
 		rotV = Math.round(Math.random() * 10) - 5;

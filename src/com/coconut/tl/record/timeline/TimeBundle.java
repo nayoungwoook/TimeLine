@@ -2,6 +2,7 @@ package com.coconut.tl.record.timeline;
 
 import java.util.ArrayList;
 
+import com.coconut.tl.Main;
 import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.MSDisplay;
@@ -99,7 +100,7 @@ public class TimeBundle {
 	public boolean onMouse = false;
 
 	public void update() {
-		if (!Game.recordSystem.run) {
+		if (!Main.game.recordSystem.run) {
 			int xx = (startPosition + nodes.size() / 2) * TIME_NODE_SIZE + Game.MS / 2 * 3;
 			int yy = (MSDisplay.height - (Game.MS / 7 * 9))
 					- (Game.timelines.size() - timeline.getLineIndex() - 2) * Game.MS;
@@ -109,12 +110,12 @@ public class TimeBundle {
 				if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3) {
 					onMouse = true;
 					if (MSInput.mouseLeft) {
-						if (Game.tool == 0) {
-							if (!Game.recordSystem.bundleSelected) {
+						if (Main.game.tool == 0) {
+							if (!Main.game.recordSystem.bundleSelected) {
 								selected = true;
-								Game.recordSystem.bundleSelected = true;
+								Main.game.recordSystem.bundleSelected = true;
 							}
-						} else if (Game.tool == 1) {
+						} else if (Main.game.tool == 1) {
 							if (!timeline.getPlayerTimeLine()) {
 								cutBundle();
 								MSInput.mouseLeft = false;
@@ -125,18 +126,18 @@ public class TimeBundle {
 			}
 
 			if (!MSInput.mouseLeft) {
-				if (Game.recordSystem.bundleSelected) {
+				if (Main.game.recordSystem.bundleSelected) {
 					if (selected) {
-						Game.recordSystem.bundleSelected = false;
+						Main.game.recordSystem.bundleSelected = false;
 						selected = false;
 						moveClickStarted = false;
 					}
 				}
 			}
 
-			if (Game.recordSystem.markerSelected) {
+			if (Main.game.recordSystem.markerSelected) {
 				selected = false;
-				Game.recordSystem.bundleSelected = false;
+				Main.game.recordSystem.bundleSelected = false;
 			}
 
 			if (selected && !timeline.getPlayerTimeLine()) {
@@ -170,12 +171,13 @@ public class TimeBundle {
 							}
 						}
 					}
-					
+
 				}
 
 				if (startPosition < 0)
 					startPosition = backStartPosition;
-				if (startPosition + nodes.size() - 1 > 8 * (Game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3))
+				if (startPosition + nodes.size() - 1 > 8
+						* (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3))
 					startPosition = backStartPosition;
 
 				moveClickStartPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;

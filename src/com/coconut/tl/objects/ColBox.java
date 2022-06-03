@@ -3,33 +3,29 @@ package com.coconut.tl.objects;
 import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.DieParticle;
-import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.math.MSMath;
 import dev.suback.marshmallow.transform.MSTrans;
 
-public class Rock extends RObject {
+public class ColBox {
 
-	public Rock(RObject.Directions direction, int x, int y, TimeLine timeline) {
-		super(direction, x, y, timeline);
-		SetSprite(Asset.ROCK);
+	private MSTrans position = new MSTrans(0, 0);
 
-		position.SetZ(2);
+	public ColBox(int x, int y) {
+		this.position.SetTransform(x, y);
 	}
 
-	public void checkInGameCollision() {
+	public void checkCollision() {
 		for (int i = 0; i < Game.timelines.size(); i++) {
 			RObject _obj = Game.timelines.get(i).getOwnerObject();
 
-			if (_obj != null && _obj != this) {
-				if (MSMath.GetDistance(_obj.simulatedPosition, simulatedPosition) <= 2
-						|| MSMath.GetDistance(_obj.position, position) <= 2) {
-					if (_obj.getClass().equals(Player.class)) {
-						Game.timelines.get(i).ownerObject = null;
+			if (_obj != null && _obj.getClass().equals(Player.class)) {
+				if (Math.abs(position.GetX() - _obj.simulatedPosition.GetX()) <= Game.MS / 2) {
+					if (Math.abs(position.GetY() - _obj.simulatedPosition.GetY()) <= Game.MS / 2) {
 
 						MSTrans playerPosition = new MSTrans(0, 0);
-						if (MSMath.GetDistance(_obj.simulatedPosition, simulatedPosition) <= 2)
+						if (MSMath.GetDistance(_obj.simulatedPosition, position) <= 2)
 							playerPosition.SetTransform(_obj.simulatedPosition.GetX(), _obj.simulatedPosition.GetY());
 						if (MSMath.GetDistance(_obj.position, position) <= 2)
 							playerPosition.SetTransform(_obj.position.GetX(), _obj.position.GetY());
@@ -44,14 +40,12 @@ public class Rock extends RObject {
 						}
 
 						Main.game.playerDied = true;
-						Main.game.playerDiedPosition.SetTransform(playerPosition.GetX(), _obj.simulatedPosition.GetY());
+						Main.game.playerDiedPosition.SetTransform(position.GetX(), position.GetY());
 
 						if ((Main.game.gameState == 1 && Main.game.recordSystem.run) || Main.game.gameState == 0)
 							Main.game.playerDie();
 
-						if (Main.game.gameState == 0) {
-							timeline.ownerObject = null;
-						}
+						Game.timelines.get(i).ownerObject = null;
 					}
 				}
 			}

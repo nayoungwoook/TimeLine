@@ -1,5 +1,6 @@
 package com.coconut.tl.objects.tile;
 
+import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.objects.Player;
 import com.coconut.tl.objects.RObject;
@@ -36,7 +37,7 @@ public class DirectionPad extends RObject {
 				if (MSMath.GetDistance(_obj.simulatedPosition, simulatedPosition) <= 2) {
 					if (_obj.getClass().equals(Player.class)) {
 						
-						if (Game.recordSystem.run) {
+						if (Main.game.recordSystem.run) {
 							// effect
 						}
 						

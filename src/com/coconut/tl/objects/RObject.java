@@ -7,6 +7,7 @@ import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
 
+import dev.suback.marshmallow.math.MSMath;
 import dev.suback.marshmallow.object.MSObject;
 import dev.suback.marshmallow.transform.MSTrans;
 
@@ -37,8 +38,18 @@ public class RObject extends MSObject {
 
 	@Override
 	public void Update() {
-		double _cxv = (targetPosition.GetX() - position.GetX()) / 4,
-				_cyv = (targetPosition.GetY() - position.GetY()) / 4;
+
+		double _cwv = (Game.MS - GetWidth()) / 5;
+		double _chv = (Game.MS - GetHeight()) / 5;
+
+		SetWidth((int) (GetWidth() + _cwv));
+		SetHeight((int) (GetHeight() + _chv));
+
+		if (MSMath.GetDistance(targetPosition, position) >= Game.MS * 3)
+			position = targetPosition;
+
+		double _cxv = (targetPosition.GetX() - position.GetX()) / 6,
+				_cyv = (targetPosition.GetY() - position.GetY()) / 6;
 
 		position.Translate(_cxv, _cyv);
 	}
@@ -65,17 +76,21 @@ public class RObject extends MSObject {
 					targetPosition.Translate(0, Game.MS);
 				if (direction == Directions.RIGHT)
 					targetPosition.Translate(Game.MS, 0);
+
 			} else {
 				movementPad = false;
 			}
 
-			TimeBundle _bundle = timeline.getBundleByTime(Game.recordSystem.getTimer());
+			TimeBundle _bundle = timeline.getBundleByTime(Main.game.recordSystem.getTimer());
 			TimeNode _node = null;
 			if (_bundle != null)
-				_node = _bundle.getNodeByTime(Game.recordSystem.getTimer());
+				_node = _bundle.getNodeByTime(Main.game.recordSystem.getTimer());
 
-			if ((Game.gameState == 1 && Game.recordSystem.run && _node != null
-					&& (Game.recordSystem.getTimer() == Main.game.replayTimer)) || Game.gameState == 0) {
+			if ((Main.game.gameState == 1 && Main.game.recordSystem.run && _node != null
+					&& (Main.game.recordSystem.getTimer() == Main.game.replayTimer)) || Main.game.gameState == 0) {
+
+				SetSize(Game.MS * 2, Game.MS / 3 * 2);
+
 				Game.particles.add(new DustParticle((int) position.GetX() + (int) Math.round(Math.random() * 20) - 10,
 						(int) position.GetY() + (int) Math.round(Math.random() * 20) - 10));
 			}
@@ -86,7 +101,6 @@ public class RObject extends MSObject {
 		}
 
 		simulatedPosition.SetTransform(targetPosition.GetX(), targetPosition.GetY());
-
 	}
 
 }

@@ -2,13 +2,13 @@ package com.coconut.tl.record.timeline;
 
 import java.util.ArrayList;
 
+import com.coconut.tl.Main;
 import com.coconut.tl.objects.Player;
 import com.coconut.tl.objects.RObject;
 import com.coconut.tl.objects.RObject.Directions;
 import com.coconut.tl.objects.Rock;
 import com.coconut.tl.objects.tile.DirectionPad;
 import com.coconut.tl.objects.tile.MovementPad;
-import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.object.MSObject;
 import dev.suback.marshmallow.transform.MSTrans;
@@ -67,9 +67,9 @@ public class TimeLine {
 	}
 
 	private void createFullMoveNodes(RObject.Module dataType) {
-		if (Game.stage != null && Game.stage.playerNodeSize != 0)
-			if (bundles.get(0).nodes.size() < Game.stage.playerNodeSize)
-				for (int i = 0; i < Game.stage.playerNodeSize; i++)
+		if (Main.game.stage != null && Main.game.stage.playerNodeSize != 0)
+			if (bundles.get(0).nodes.size() < Main.game.stage.playerNodeSize)
+				for (int i = 0; i < Main.game.stage.playerNodeSize; i++)
 					bundles.get(0).nodes.add(new TimeNode(dataType));
 	}
 

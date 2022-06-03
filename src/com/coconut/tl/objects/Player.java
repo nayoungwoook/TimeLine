@@ -14,9 +14,6 @@ import dev.suback.marshmallow.transform.MSTrans;
 
 public class Player extends RObject {
 
-	protected final int CONST_OF_TILE_X = MSDisplay.width / 2 - Game.MS * 24 / 2 + Game.MS / 2,
-			CONST_OF_TILE_Y = MSDisplay.height / 2 - Game.MS * 13 / 2 + Game.MS / 2;
-
 	public Player(RObject.Directions dir, int x, int y, TimeLine timeline) {
 		super(dir, x, y, timeline);
 		SetSprite(Asset.PLAYER);
@@ -27,9 +24,10 @@ public class Player extends RObject {
 	public void Update() {
 		super.Update();
 
-		if (position.GetY() < 0) {
+		if (position.GetY() < 0 || position.GetY() > MSDisplay.height || position.GetX() < 0
+				|| position.GetX() > MSDisplay.width) {
 			timeline.ownerObject = null;
-			if (Game.recordSystem.run) {
+			if (Main.game.recordSystem.run) {
 				for (int j = 0; j < (int) Math.round(Math.random() * 5) + 5; j++) {
 					Game.particles.add(new DieParticle((int) simulatedPosition.GetX(), (int) simulatedPosition.GetY()));
 				}
@@ -40,19 +38,23 @@ public class Player extends RObject {
 			Main.game.playerDied = true;
 			Main.game.playerDiedPosition.SetTransform(simulatedPosition.GetX(), simulatedPosition.GetY());
 
-			if ((Game.gameState == 1 && Game.recordSystem.run) || Game.gameState == 0)
+			if ((Main.game.gameState == 1 && Main.game.recordSystem.run) || Main.game.gameState == 0)
 				Main.game.playerDie();
-
 		}
 
 		if ((int) MSMath.GetDistance(new MSTrans(Game.timelines.get(0).startX, Game.timelines.get(0).startY),
 				position) <= Game.MS / 2) {
-			Game.playerPositionReset = true;
+			Main.game.playerPositionReset = true;
 		}
 
-		if (MSMath.GetDistance(Game.stage.clearPosition, position) <= 2) {
-			if (!Game.stage.cleared && Game.recordSystem.run && Game.playerPositionReset) {
-				Game.stage.cleared = true;
+		if (MSMath.GetDistance(Main.game.stage.clearPosition, position) <= 2) {
+			if (!Main.game.stage.cleared && Main.game.recordSystem.run && Main.game.playerPositionReset) {
+
+				Main.game.stage.cleared = true;
+				
+				Main.saveLoader.saveData.getJSONObject("CLEAR").put(Main.game.stageIndex + "", true);
+				Main.saveLoader.saveGameData();
+
 				MSCamera.position.Translate((int) Math.round(Math.random() * 30) - 15,
 						(int) Math.round(Math.random() * 30) - 15, 0.1);
 

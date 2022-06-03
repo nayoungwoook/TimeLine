@@ -3,6 +3,7 @@ package com.coconut.tl.record;
 import java.awt.event.KeyEvent;
 
 import com.coconut.tl.Main;
+import com.coconut.tl.asset.Asset;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
@@ -39,6 +40,7 @@ public class RecordSystem {
 		for (int i = 0; i < timer + 1; i++) {
 
 			Main.game.replayTimer = i;
+
 			// 리플레이 전에 충돌 체킹
 			if (Main.game != null)
 				Main.game.checkCollision();
@@ -83,11 +85,15 @@ public class RecordSystem {
 	}
 
 	private int TIME_NODE_SIZE = Game.MS / 16 * 2;
+	private int tempClickPos = 0;
 
 	public void update() {
-		if (timer >= maxRecordTime) {
-			if (recording)
-				changeRecording();
+
+		if (Main.game.gameState == 0) {
+			if (timer >= maxRecordTime) {
+				if (recording)
+					changeRecording();
+			}
 		}
 
 		int clickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;
@@ -103,17 +109,26 @@ public class RecordSystem {
 		if (markerSelected)
 			timer = clickPos + 1;
 
+		if (timer < 0)
+			timer = 0;
+		if (timer > 8 * (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3))
+			timer = 8 * (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3);
+
+		if(Math.abs(tempClickPos - timer) > 2 && MSInput.mouseRight) {
+			Asset.WAV_UI_MOVE.play();
+			tempClickPos = timer;
+		}
 		if (MSInput.mouseLeft || MSInput.mouseRight) {
 			if (!run && !recording) {
 				createPausedGame();
 			}
 		}
 
-		if (MSInput.keys[KeyEvent.VK_SPACE] && Game.gameState == 1 && !Game.stage.cleared) {
+		if (MSInput.keys[KeyEvent.VK_SPACE] && Main.game.gameState == 1 && !Main.game.stage.cleared) {
 			run = !run;
 
 			if (run) {
-				Game._backupPlayerDied = false;
+				Main.game._backupPlayerDied = false;
 				resetTimer();
 			}
 
@@ -132,7 +147,7 @@ public class RecordSystem {
 	public void resetTimer() {
 		timer = -1;
 
-		Game.playerPositionReset = false;
+		Main.game.playerPositionReset = false;
 		for (int i = 0; i < Game.timelines.size(); i++) {
 			Game.timelines.get(i).replayObject = null;
 		}
