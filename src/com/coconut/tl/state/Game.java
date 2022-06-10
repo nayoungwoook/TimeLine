@@ -50,8 +50,10 @@ public class Game implements MSState {
 	public MSSprite cursorImage;
 	public Stage stage;
 
-	public boolean playerPositionReset = false;
+	public int selectedTimeLineIndx = -1;
 
+	public boolean playerPositionReset = false;
+ 
 	// 스테이트 전환후, 기다리는 타이머
 	private double awaitTimer = 0;
 
@@ -63,6 +65,9 @@ public class Game implements MSState {
 	public int stageIndex = 1, chapter = 0;
 	private boolean stageStarted = false;
 
+	public int unlockedTimelineCount = 0;
+	public boolean lockedInput = false;
+	
 	public Game(int stageIndex, int chapter) {
 		this.stageIndex = stageIndex;
 		this.chapter = chapter;
@@ -106,20 +111,71 @@ public class Game implements MSState {
 
 	private int timelineY = 400;
 	public int targetTimelineY = 0;
+	private int timelineScroll = 0;
+
+	public int getTimeLineScroll() {
+		return timelineScroll;
+	}
 
 	private void renderTimeLine(TimeLine timeline, int index) {
 
 		int TIME_NODE_SIZE = MS / 16 * 2;
 
-		for (int i = 0; i < stage.playerNodeSize * TIME_NODE_SIZE / MS + 3; i++) {
+		int len = stage.playerNodeSize * TIME_NODE_SIZE / MS + 3;
+
+		int tLen = timelines.size();
+		if (tLen > 4)
+			tLen = 4;
+
+		if (!timeline.getPlayerTimeLine()) {
+			MSShape.RenderUIImage(Asset.UI_TIMELINE_BG[2], (1) * MS,
+					(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3, MS,
+					MS);
+
+			MSSprite img = null;
+			if (timeline.getObject().equals("rock")) {
+				img = Asset.ROCK;
+			}
+			if (timeline.getObject().equals("directionpad")) {
+				img = Asset.DUNGEON_TILE[14];
+			}
+			if (timeline.getObject().equals("movementpad")) {
+				img = Asset.DUNGEON_TILE[15];
+			}
+
+			if (img != null)
+				MSShape.RenderUIImage(img, (1) * MS,
+						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3.2,
+						MS / 3 * 2, MS / 3 * 2);
+
+			if (timeline.locked) {
+				MSShape.RenderUIImage(Asset.UI_DIE_MARKER, (1) * MS,
+						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 4,
+						MS, MS);
+			}
+		}
+
+		for (int i = 0; i < len; i++) {
 			if (!timeline.getPlayerTimeLine()) {
-				MSShape.RenderUIImage(Asset.UI_TIMELINE_BG, (i + 2) * MS,
-						(MSDisplay.height - (MS / 2 * 3)) + (index - (timelines.size() - 1)) * MS + timelineY, 3, MS,
-						MS);
+
+				MSSprite _img = Asset.UI_TIMELINE_BG[0];
+				if (i == len - 1) {
+					_img = Asset.UI_TIMELINE_BG[1];
+				}
+
+				MSShape.RenderUIImage(_img, (i + 2) * MS,
+						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3,
+						MS, MS);
+
 			} else {
-				MSShape.RenderUIImage(Asset.UI_PLAYER_TIMELINE_BG, (i + 2) * MS,
-						(MSDisplay.height - (MS / 2 * 3)) + (index - (timelines.size() - 1)) * MS + MS / 3 + timelineY,
-						3, MS, MS);
+				MSShape.RenderUIImage(Asset.UI_PLAYER_TIMELINE_BG, (i + 2) * MS, (MSDisplay.height - (MS / 2 * 3))
+						+ (index - timelineScroll - (tLen - 1)) * MS + MS / 3 + timelineY, 3, MS, MS);
+			}
+
+			if (timeline.locked && !timeline.getPlayerTimeLine()) {
+				MSShape.RenderUIImage(Asset.UI_DARK, (i + 2) * MS,
+						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3.2,
+						MS, MS);
 			}
 		}
 
@@ -149,11 +205,11 @@ public class Game implements MSState {
 
 				if (!timeline.getPlayerTimeLine()) {
 					MSShape.RenderUIImage(_image, 2 * MS + TIME_NODE_SIZE * j + _bundle.startPosition * TIME_NODE_SIZE,
-							(MSDisplay.height - (MS / 2 * 3)) + (index - (timelines.size() - 1)) * MS + timelineY, 3,
-							MS, MS);
+							(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY,
+							3, MS, MS);
 				} else {
 					MSShape.RenderUIImage(_image, 2 * MS + TIME_NODE_SIZE * j + _bundle.startPosition * TIME_NODE_SIZE,
-							(MSDisplay.height - (MS / 2 * 3)) + (index - (timelines.size() - 1)) * MS + MS / 3
+							(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + MS / 3
 									+ timelineY,
 							3, MS, MS);
 				}
@@ -162,13 +218,17 @@ public class Game implements MSState {
 
 		if (!timeline.getPlayerTimeLine())
 			MSShape.RenderUIImage(Asset.UI_MARKER, 2 * MS + TIME_NODE_SIZE * (recordSystem.getTimer()),
-					(MSDisplay.height - (MS / 2 * 3)) + (index - (timelines.size() - 1)) * MS + timelineY, 3.2, MS, MS);
+					(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3.2, MS,
+					MS);
 	}
 
 	private boolean renderTimeLineButton(int index) {
 
+		int len = timelines.size();
+		if (len > 4)
+			len = 4;
 		int x = (2 + index) * MS;
-		int y = (MSDisplay.height - (MS / 2 * 3)) + (0 - (timelines.size())) * MS + MS / 3 * 2 + timelineY;
+		int y = (MSDisplay.height - (MS / 2 * 3)) + (0 - (len)) * MS + MS / 3 * 2 + timelineY;
 
 		if (index == 0) {
 			// is play
@@ -211,8 +271,30 @@ public class Game implements MSState {
 			MSInput.mouseLeft = false;
 		}
 
-		for (int i = 0; i < timelines.size(); i++) {
-			renderTimeLine(timelines.get(i), i);
+		int len = timelines.size();
+		if (len > 4)
+			len = 4;
+
+		if (gameState == 1) {
+			if (MSInput.keys[KeyEvent.VK_W]) {
+
+				if (timelineScroll > 0)
+					timelineScroll--;
+
+				MSInput.keys[KeyEvent.VK_W] = false;
+			}
+
+			if (MSInput.keys[KeyEvent.VK_S]) {
+				if (timelineScroll + 3 < timelines.size() - 1)
+					timelineScroll++;
+
+				MSInput.keys[KeyEvent.VK_S] = false;
+			}
+		}
+
+		renderTimeLine(timelines.get(0), timelineScroll);
+		for (int i = 0; i < len - 1; i++) {
+			renderTimeLine(timelines.get(i + timelineScroll + 1), i + 1 + timelineScroll);
 		}
 
 		if (!stageStarted) {
@@ -419,16 +501,14 @@ public class Game implements MSState {
 
 		// 업데이트 하고 미리 충돌 체킹 (레코딩 부분)
 		for (int i = 0; i < timelines.size(); i++) {
-			if (timelines.get(i).ownerObject != null) {
-				if (timelines.get(i).ownerObject.getClass() == Rock.class) {
-					((Rock) timelines.get(i).ownerObject).checkInGameCollision();
-				}
-				if (timelines.get(i).ownerObject.getClass() == DirectionPad.class) {
-					((DirectionPad) timelines.get(i).ownerObject).checkInGameCollision();
-				}
-				if (timelines.get(i).ownerObject.getClass() == MovementPad.class) {
-					((MovementPad) timelines.get(i).ownerObject).checkInGameCollision();
-				}
+			if (timelines.get(i).ownerObject != null && timelines.get(i).ownerObject.getClass() == Rock.class) {
+				((Rock) timelines.get(i).ownerObject).checkInGameCollision();
+			}
+			if (timelines.get(i).ownerObject != null && timelines.get(i).ownerObject.getClass() == DirectionPad.class) {
+				((DirectionPad) timelines.get(i).ownerObject).checkInGameCollision();
+			}
+			if (timelines.get(i).ownerObject != null && timelines.get(i).ownerObject.getClass() == MovementPad.class) {
+				((MovementPad) timelines.get(i).ownerObject).checkInGameCollision();
 			}
 		}
 
@@ -451,8 +531,9 @@ public class Game implements MSState {
 
 			for (int i = 0; i < timelines.size(); i++) {
 				if (timelines.get(i).ownerObject != null) {
-					timelines.get(i).ownerObject.turn(
-							timelines.get(i).getBundleByTime((int) timer).getNodeByTime((int) timer).getDataType());
+					if (timelines.get(i).getBundleByTime((int) timer) != null)
+						timelines.get(i).ownerObject.turn(
+								timelines.get(i).getBundleByTime((int) timer).getNodeByTime((int) timer).getDataType());
 				}
 			}
 		}
@@ -479,7 +560,12 @@ public class Game implements MSState {
 			cursorImage = Asset.UI_CURSOR[1];
 
 		timelineY += (targetTimelineY - timelineY) / 20;
-
+		
+		if(MSInput.keys[KeyEvent.VK_S] && MSInput.keys[KeyEvent.VK_CONTROL]) {
+			System.out.println("s");
+			Main.saveLoader.writeSaveFile();
+		}
+		
 		if (MSInput.keys[KeyEvent.VK_SPACE] && !stageStarted) {
 
 			if (!stageStarted) {
@@ -519,6 +605,7 @@ public class Game implements MSState {
 				timelines.get(i).ownerObject.Update();
 		}
 
+		selectedTimeLineIndx = -1;
 		for (int i = 0; i < timelines.size(); i++) {
 			timelines.get(i).update();
 			for (int j = 0; j < timelines.get(i).bundles.size(); j++) {

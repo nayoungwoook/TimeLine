@@ -44,7 +44,7 @@ public class Title implements MSState {
 				MSDisplay.height);
 
 		// CURSOR
-		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX(), (int) MSInput.mousePointer.GetY(),
+		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX() + 15, (int) MSInput.mousePointer.GetY(),
 				10, 70, 70);
 
 		renderButton(Buttons.START);

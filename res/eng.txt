@@ -9,5 +9,8 @@
 	"STAGES" : {
 		"1":"stage 01 - let's start",
 		"2":"stage 02 - moves like jagger",
+		"3":"stage 03 - The ROCK (Not Dwayne Johnson)",
+		"4":"stage 04 - FACE TIME",
+		"5":"stage 05 - Ma zi mak stage",
 	},
 }

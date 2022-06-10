@@ -1,5 +1,7 @@
 package com.coconut.tl;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -18,7 +20,23 @@ public class SaveLoader {
 
 		for (int i = 0; i < 5; i++)
 			_res.getJSONObject("CLEAR").put(i + "", Main.select.stageCleared[i]);
-		
+
+	}
+
+	public void writeSaveFile() {
+		String str = "test";
+		byte[] bytes = str.getBytes();
+		File file = new File("res/savefile.txt");
+		File aFile = new File(file.getAbsolutePath());
+		System.out.println(aFile.getPath());
+		try {
+
+			FileOutputStream outputStream = new FileOutputStream(aFile);
+			outputStream.write(bytes);
+			outputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void readSaveFile() {

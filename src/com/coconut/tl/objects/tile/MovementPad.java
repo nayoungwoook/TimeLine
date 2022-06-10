@@ -21,11 +21,11 @@ public class MovementPad extends RObject {
 	public void Update() {
 		super.Update();
 		setRotateDir();
-
+		
 		if (!switched) {
-			super.SetBrightness(-150);
+			SetBrightness(-150 + plusBir);
 		} else {
-			super.SetBrightness(0);
+			SetBrightness(0 + plusBir);
 		}
 	}
 

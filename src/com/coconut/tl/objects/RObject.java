@@ -1,14 +1,20 @@
 package com.coconut.tl.objects;
 
+import java.awt.Color;
+
 import com.coconut.tl.Main;
+import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.DustParticle;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
+import com.sun.glass.events.KeyEvent;
 
+import dev.suback.marshmallow.input.MSInput;
 import dev.suback.marshmallow.math.MSMath;
 import dev.suback.marshmallow.object.MSObject;
+import dev.suback.marshmallow.object.shape.MSShape;
 import dev.suback.marshmallow.transform.MSTrans;
 
 public class RObject extends MSObject {
@@ -21,12 +27,15 @@ public class RObject extends MSObject {
 		MOVE, SWITCH
 	}
 
+	protected int plusBir = 0;
+
 	public Directions direction = Directions.UP;
 	public MSTrans targetPosition;
 	public MSTrans simulatedPosition;
 	public boolean switched = true;
 	protected TimeLine timeline;
 	public boolean movementPad = false;
+	private int index = -1;
 
 	public RObject(RObject.Directions direction, int x, int y, TimeLine timeline) {
 		super(x, y, Game.MS, Game.MS);
@@ -34,6 +43,12 @@ public class RObject extends MSObject {
 		this.timeline = timeline;
 		targetPosition = new MSTrans(x, y);
 		simulatedPosition = new MSTrans(x, y);
+
+		for (int i = 0; i < Game.timelines.size(); i++) {
+			if (timeline == Game.timelines.get(i)) {
+				index = i;
+			}
+		}
 	}
 
 	@Override
@@ -52,6 +67,20 @@ public class RObject extends MSObject {
 				_cyv = (targetPosition.GetY() - position.GetY()) / 6;
 
 		position.Translate(_cxv, _cyv);
+
+		if (this.timeline.getLineIndex() == Main.game.selectedTimeLineIndx && Main.game.gameState == 1
+				&& !Main.game.recordSystem.run) {
+			plusBir = 70;
+		} else {
+			plusBir = 0;
+		}
+
+		arrowTimer += 0.02;
+
+		if (arrowTimer >= (int) (Math.PI * 2 * 10))
+			arrowTimer = 0;
+
+		SetBrightness(plusBir);
 	}
 
 	protected void setRotateDir() {
@@ -63,6 +92,31 @@ public class RObject extends MSObject {
 			SetRotation((float) Math.toRadians(-180));
 		if (direction == Directions.RIGHT)
 			SetRotation((float) Math.toRadians(-270));
+	}
+
+	private double arrowTimer;
+
+	@Override
+	public void Render() {
+		super.Render();
+
+		if (Main.game.selectedTimeLineIndx == timeline.getLineIndex() && !Main.game.recordSystem.run
+				&& Main.game.gameState == 1 && !(MSInput.mouseLeft || MSInput.mouseRight)) {
+			
+			MSShape.RenderImage(Asset.UI_ARROW_MARKER, (int) position.GetX(),
+					(int) position.GetY() - Game.MS / 3 * 2 - (int) (Math.sin(arrowTimer * 10) * 15), 2.5, Game.MS,
+					Game.MS);
+		}
+
+		if (MSInput.keys[KeyEvent.VK_CONTROL]) {
+			MSShape.SetColor(Color.white);
+			MSShape.SetFont(Asset.FONT[3]);
+
+			if (index > 0) {
+				MSShape.RenderText("" + index, (int) position.GetX() - Game.MS / 2, (int) position.GetY() - Game.MS / 2,
+						3);
+			}
+		}
 	}
 
 	public void turn(RObject.Module dataType) {

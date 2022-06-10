@@ -30,6 +30,7 @@ public class Main {
 		display.setCursor(display.getToolkit().createCustomCursor(new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB),
 				new Point(0, 0), "null"));
 		MSState.SetState(loading);
+		
 	}
 
 }

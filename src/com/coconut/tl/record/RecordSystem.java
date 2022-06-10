@@ -54,7 +54,7 @@ public class RecordSystem {
 						if (!Game.timelines.get(j)._reset) {
 							Game.timelines.get(j)._reset = true;
 							if (!Game.timelines.get(j).getPlayerTimeLine()) {
-								Game.timelines.get(j).createOwnerObject();
+								Game.timelines.get(j).createOwnerObject(false);
 							} else {
 								Game.timelines.get(j).createPlayer();
 							}
@@ -69,7 +69,7 @@ public class RecordSystem {
 				if (_bundle == null) {
 					if (Game.timelines.get(j).getObject().equals("directionpad")
 							|| Game.timelines.get(j).getObject().equals("movementpad")) {
-						Game.timelines.get(j).createOwnerObject();
+						Game.timelines.get(j).createOwnerObject(false);
 					}
 				}
 
@@ -114,17 +114,29 @@ public class RecordSystem {
 		if (timer > 8 * (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3))
 			timer = 8 * (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3);
 
-		if(Math.abs(tempClickPos - timer) > 2 && MSInput.mouseRight) {
+		if (Math.abs(tempClickPos - timer) > 2 && MSInput.mouseRight) {
 			Asset.WAV_UI_MOVE.play();
 			tempClickPos = timer;
 		}
-		if (MSInput.mouseLeft || MSInput.mouseRight) {
+
+		if (MSInput.mouseLeft || MSInput.mouseRight || MSInput.keys[KeyEvent.VK_D] || MSInput.keys[KeyEvent.VK_A]) {
+
+			if (MSInput.keys[KeyEvent.VK_A]) {
+				timer--;
+				MSInput.keys[KeyEvent.VK_A] = false;
+			}
+			if (MSInput.keys[KeyEvent.VK_D]) {
+				timer++;
+				MSInput.keys[KeyEvent.VK_D] = false;
+			}
+
 			if (!run && !recording) {
 				createPausedGame();
 			}
 		}
 
-		if (MSInput.keys[KeyEvent.VK_SPACE] && Main.game.gameState == 1 && !Main.game.stage.cleared) {
+		if (MSInput.keys[KeyEvent.VK_SPACE] && Main.game.gameState == 1 && !Main.game.stage.cleared
+				&& !Main.game.lockedInput) {
 			run = !run;
 
 			if (run) {
@@ -155,6 +167,10 @@ public class RecordSystem {
 
 	public int getTimer() {
 		return timer;
+	}
+
+	public void changeTimer(int value) {
+		timer += value;
 	}
 
 	public boolean isRecording() {

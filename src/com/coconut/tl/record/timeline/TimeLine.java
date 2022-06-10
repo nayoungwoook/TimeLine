@@ -3,13 +3,18 @@ package com.coconut.tl.record.timeline;
 import java.util.ArrayList;
 
 import com.coconut.tl.Main;
+import com.coconut.tl.effect.ClearParticle;
+import com.coconut.tl.effect.DieParticle;
 import com.coconut.tl.objects.Player;
 import com.coconut.tl.objects.RObject;
 import com.coconut.tl.objects.RObject.Directions;
 import com.coconut.tl.objects.Rock;
 import com.coconut.tl.objects.tile.DirectionPad;
 import com.coconut.tl.objects.tile.MovementPad;
+import com.coconut.tl.state.Game;
 
+import dev.suback.marshmallow.MSDisplay;
+import dev.suback.marshmallow.input.MSInput;
 import dev.suback.marshmallow.object.MSObject;
 import dev.suback.marshmallow.transform.MSTrans;
 
@@ -26,6 +31,7 @@ public class TimeLine {
 	public Directions startDir;
 	public MSTrans backPosition = new MSTrans(0, 0);
 	public boolean switched = true;
+	public boolean locked = false;
 
 	private boolean playerTimeLine = true;
 
@@ -35,6 +41,7 @@ public class TimeLine {
 		this.playerTimeLine = playerTimeLine;
 		replayObjectTargetPosition.SetTransform(startX, startY);
 
+		this.locked = true;
 		this.lineIndex = lineIndex;
 		this.startDir = dir;
 		this.startX = x;
@@ -42,26 +49,28 @@ public class TimeLine {
 		this.object = object;
 
 		if (!playerTimeLine)
-			createInitOwnerObject();
+			createOwnerObject(true);
 		else
 			createPlayer();
 	}
-	
-	public TimeLine(int lineIndex, String object, int x, int y, RObject.Directions dir, boolean playerTimeLine, boolean switched) {
+
+	public TimeLine(int lineIndex, String object, int x, int y, RObject.Directions dir, boolean playerTimeLine,
+			boolean switched) {
 		initBundle();
-		
+
 		this.playerTimeLine = playerTimeLine;
 		replayObjectTargetPosition.SetTransform(startX, startY);
-		
+
+		this.locked = true;
 		this.lineIndex = lineIndex;
 		this.startDir = dir;
 		this.startX = x;
 		this.startY = y;
 		this.object = object;
 		this.switched = switched;
-		
+
 		if (!playerTimeLine)
-			createInitOwnerObject();
+			createOwnerObject(true);
 		else
 			createPlayer();
 	}
@@ -79,35 +88,26 @@ public class TimeLine {
 		createFullMoveNodes(RObject.Module.MOVE);
 	}
 
-	public void createInitOwnerObject() {
+	public void createOwnerObject(boolean init) {
 		if (object.equals("rock")) {
 			this.ownerObject = new Rock(startDir, startX, startY, this);
-			createFullMoveNodes(RObject.Module.MOVE);
-		}
-		if (object.equals("directionpad")) {
-			this.ownerObject = new DirectionPad(startDir, startX, startY, this);
-			createFullMoveNodes(RObject.Module.SWITCH);
-			this.ownerObject.switched = switched;
-		}
-		if (object.equals("movementpad")) {
-			this.ownerObject = new MovementPad(startDir, startX, startY, this);
-			createFullMoveNodes(RObject.Module.SWITCH);
-			this.ownerObject.switched = switched;
-		}
-		this.replayObjectTargetPosition.SetTransform(startX, startY);
-	}
-
-	public void createOwnerObject() {
-		if (object.equals("rock")) {
-			this.ownerObject = new Rock(startDir, startX, startY, this);
+			
+			if(init)
+				createFullMoveNodes(RObject.Module.MOVE);
 		}
 		if (object.equals("directionpad")) {
 			this.ownerObject = new DirectionPad(startDir, startX, startY, this);
 			this.ownerObject.switched = switched;
+			
+			if(init)
+				createFullMoveNodes(RObject.Module.SWITCH);
 		}
 		if (object.equals("movementpad")) {
 			this.ownerObject = new MovementPad(startDir, startX, startY, this);
 			this.ownerObject.switched = switched;
+			
+			if(init)
+				createFullMoveNodes(RObject.Module.SWITCH);
 		}
 		this.replayObjectTargetPosition.SetTransform(startX, startY);
 	}
@@ -138,6 +138,47 @@ public class TimeLine {
 					_cyv = (replayObjectTargetPosition.GetY() - replayObject.position.GetY()) / 6;
 			replayObject.position.Translate(_cxv, _cyv);
 		}
+
+		int len = Game.timelines.size();
+		if (len > 4)
+			len = 4;
+
+		int yy = (MSDisplay.height - (Game.MS / 7 * 9))
+				- (len + Main.game.getTimeLineScroll() - getLineIndex() - 2) * Game.MS;
+		int xx = Game.MS;
+
+		if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3) {
+			Main.game.selectedTimeLineIndx = getLineIndex();
+
+			if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 2) {
+				if (MSInput.mouseLeft) {
+
+					if ((locked && Main.game.unlockedTimelineCount < 4) || !locked) {
+						locked = !locked;
+
+						if (!locked) {
+							for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
+								Game.particles.add(new ClearParticle(Game.MS, yy));
+							
+							Main.game.unlockedTimelineCount++;
+						} else {
+							for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
+								Game.particles.add(new DieParticle(Game.MS, yy));
+							
+							this.bundles.clear();
+							this.initBundle();
+							this.createOwnerObject(true);
+								
+							Main.game.unlockedTimelineCount--;
+						}
+
+					}
+
+					MSInput.mouseLeft = false;
+				}
+			}
+		}
+
 	}
 
 	public TimeBundle getBundleByTime(int time) {
@@ -156,7 +197,7 @@ public class TimeLine {
 	public String getObject() {
 		return object;
 	}
-	
+
 	public void initBundle() {
 		bundles.add(new TimeBundle(0, this));
 	}

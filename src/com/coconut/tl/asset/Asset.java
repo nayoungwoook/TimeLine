@@ -29,7 +29,9 @@ public class Asset {
 
 	public static final MSSprite PLAYER = new MSSprite("img/player.png");
 
-	public static final MSSprite UI_TIMELINE_BG = new MSSprite("img/timeline.png").CutImage(0, 0, 16, 16);
+	public static final MSSprite UI_TIMELINE_BG[] = { new MSSprite("img/timeline.png").CutImage(0, 0, 16, 16),
+			new MSSprite("img/timeline.png").CutImage(0, 16 * 2, 16, 16),
+			new MSSprite("img/timeline.png").CutImage(16 * 3, 0, 16, 16), };
 	public static final MSSprite UI_TIMELINE[][] = {
 			{ new MSSprite("img/timeline.png").CutImage(16, 0, 16, 16),
 					new MSSprite("img/timeline.png").CutImage(0, 16, 16, 16),
@@ -57,6 +59,7 @@ public class Asset {
 
 	public static final MSSprite UI_DIE_MARKER = new MSSprite("img/die_marker.png");
 	public static final MSSprite UI_CLEAR_MARKER = new MSSprite("img/clear_marker.png");
+	public static final MSSprite UI_ARROW_MARKER = new MSSprite("img/arrow_marker.png");
 
 	public static final MSSprite UI_CURSOR[] = { new MSSprite("img/cursor.png").CutImage(0, 0, 16, 16),
 			new MSSprite("img/cursor.png").CutImage(16, 0, 16, 16), };
@@ -77,6 +80,8 @@ public class Asset {
 			new MSSprite("img/transition.png").CutImage(24 * 13, 0, 24, 24),
 			new MSSprite("img/transition.png").CutImage(24 * 14, 0, 24, 24),
 			new MSSprite("img/transition.png").CutImage(24 * 15, 0, 24, 24), };
+
+	public static final MSSprite UI_DARK = new MSSprite("img/dark.png");
 
 	// w = 70 , h = 25
 	public static final MSSprite UI_TITLE = new MSSprite("img/title.png");
@@ -122,11 +127,18 @@ public class Asset {
 	public static final MSSound WAV_MOVE = new MSSound("wav/move.wav");
 	public static final MSSound WAV_UI_MOVE = new MSSound("wav/uimove.wav");
 
+	public static final MSSprite TUTORIAL1[] = { new MSSprite("img/Stages/tutorial1.png").CutImage(0, 0, 384, 208),
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384, 0, 384, 208),
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 2, 0, 384, 208),
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 3, 0, 384, 208),
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 4, 0, 384, 208), };
+
 	public static final MSSprite STAGE_SELECT[] = { new MSSprite("img/chapter1StageSelect.png"), };
 
 	public static final MSSprite STAGES[] = { new MSSprite("img/Stages/Stage01.png"),
-			new MSSprite("img/Stages/Stage02.png"), };
+			new MSSprite("img/Stages/Stage02.png"), new MSSprite("img/Stages/Stage03.png"), };
 
-	public static final MSSprite STAGE_COLS[] = { null, new MSSprite("img/Stages/Stage02Col.png"), };
+	public static final MSSprite STAGE_COLS[] = { null, new MSSprite("img/Stages/Stage02Col.png"),
+			new MSSprite("img/Stages/Stage03Col.png"), };
 
 }

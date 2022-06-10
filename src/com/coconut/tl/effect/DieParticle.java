@@ -13,7 +13,7 @@ public class DieParticle extends MSObject {
 
 	public DieParticle(int x, int y) {
 		super(x, y, Game.MS, Game.MS);
-		position.SetZ(2);
+		position.SetZ(4);
 		SetSprite(Asset.DUST_PARTICLE[0]);
 
 		rotV = Math.round(Math.random() * 10) - 5;

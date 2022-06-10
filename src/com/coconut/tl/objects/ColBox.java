@@ -20,32 +20,34 @@ public class ColBox {
 		for (int i = 0; i < Game.timelines.size(); i++) {
 			RObject _obj = Game.timelines.get(i).getOwnerObject();
 
-			if (_obj != null && _obj.getClass().equals(Player.class)) {
+			if (_obj != null) {
 				if (Math.abs(position.GetX() - _obj.simulatedPosition.GetX()) <= Game.MS / 2) {
 					if (Math.abs(position.GetY() - _obj.simulatedPosition.GetY()) <= Game.MS / 2) {
+						if (_obj.getClass().equals(Player.class)) {
+							MSTrans playerPosition = new MSTrans(0, 0);
+							if (MSMath.GetDistance(_obj.simulatedPosition, position) <= 2)
+								playerPosition.SetTransform(_obj.simulatedPosition.GetX(),
+										_obj.simulatedPosition.GetY());
+							if (MSMath.GetDistance(_obj.position, position) <= 2)
+								playerPosition.SetTransform(_obj.position.GetX(), _obj.position.GetY());
 
-						MSTrans playerPosition = new MSTrans(0, 0);
-						if (MSMath.GetDistance(_obj.simulatedPosition, position) <= 2)
-							playerPosition.SetTransform(_obj.simulatedPosition.GetX(), _obj.simulatedPosition.GetY());
-						if (MSMath.GetDistance(_obj.position, position) <= 2)
-							playerPosition.SetTransform(_obj.position.GetX(), _obj.position.GetY());
+							if (Main.game.recordSystem.run) {
+								for (int j = 0; j < (int) Math.round(Math.random() * 5) + 5; j++) {
+									Game.particles.add(
+											new DieParticle((int) playerPosition.GetX(), (int) playerPosition.GetY()));
+								}
 
-						if (Main.game.recordSystem.run) {
-							for (int j = 0; j < (int) Math.round(Math.random() * 5) + 5; j++) {
-								Game.particles
-										.add(new DieParticle((int) playerPosition.GetX(), (int) playerPosition.GetY()));
+								Asset.WAV_DIE.play();
 							}
 
-							Asset.WAV_DIE.play();
+							Main.game.playerDied = true;
+							Main.game.playerDiedPosition.SetTransform(position.GetX(), position.GetY());
+
+							if ((Main.game.gameState == 1 && Main.game.recordSystem.run) || Main.game.gameState == 0)
+								Main.game.playerDie();
+
+							Game.timelines.get(i).ownerObject = null;
 						}
-
-						Main.game.playerDied = true;
-						Main.game.playerDiedPosition.SetTransform(position.GetX(), position.GetY());
-
-						if ((Main.game.gameState == 1 && Main.game.recordSystem.run) || Main.game.gameState == 0)
-							Main.game.playerDie();
-
-						Game.timelines.get(i).ownerObject = null;
 					}
 				}
 			}

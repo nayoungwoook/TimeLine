@@ -38,6 +38,9 @@ public class TimeBundle {
 
 	public void cutBundle() {
 
+		if (Main.game.lockedInput)
+			return;
+
 		int cutClickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE - startPosition - 1;
 
 		TimeBundle _subBundle = new TimeBundle(cutClickPos + startPosition + 1, timeline);
@@ -100,10 +103,14 @@ public class TimeBundle {
 	public boolean onMouse = false;
 
 	public void update() {
-		if (!Main.game.recordSystem.run) {
+		if (!Main.game.recordSystem.run && !Main.game.lockedInput) {
+			int len = Game.timelines.size();
+			if (len > 4)
+				len = 4;
+
 			int xx = (startPosition + nodes.size() / 2) * TIME_NODE_SIZE + Game.MS / 2 * 3;
 			int yy = (MSDisplay.height - (Game.MS / 7 * 9))
-					- (Game.timelines.size() - timeline.getLineIndex() - 2) * Game.MS;
+					- (len + Main.game.getTimeLineScroll() - timeline.getLineIndex() - 2) * Game.MS;
 
 			onMouse = false;
 			if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 16 * 1 * nodes.size()) {
@@ -116,7 +123,7 @@ public class TimeBundle {
 								Main.game.recordSystem.bundleSelected = true;
 							}
 						} else if (Main.game.tool == 1) {
-							if (!timeline.getPlayerTimeLine()) {
+							if (!timeline.getPlayerTimeLine() && !timeline.locked) {
 								cutBundle();
 								MSInput.mouseLeft = false;
 							}
@@ -140,7 +147,7 @@ public class TimeBundle {
 				Main.game.recordSystem.bundleSelected = false;
 			}
 
-			if (selected && !timeline.getPlayerTimeLine()) {
+			if (selected && !timeline.getPlayerTimeLine() && !timeline.locked) {
 				if (!moveClickStarted)
 					moveClickStartPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;
 

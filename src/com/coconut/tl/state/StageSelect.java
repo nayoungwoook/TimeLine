@@ -63,10 +63,10 @@ public class StageSelect implements MSState {
 
 	@Override
 	public void Init() {
-		
+
 		transitions.clear();
 		particles.clear();
-		
+
 		getLockedOnStageIndex();
 
 		for (int i = 0; i < 15; i++) {
@@ -126,7 +126,7 @@ public class StageSelect implements MSState {
 				Game.MS);
 
 		// CURSOR
-		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX(), (int) MSInput.mousePointer.GetY(),
+		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX() + 15, (int) MSInput.mousePointer.GetY(),
 				10, 70, 70);
 	}
 
@@ -134,6 +134,8 @@ public class StageSelect implements MSState {
 
 	@Override
 	public void Update() {
+
+		MSCamera.position.SetTransform(0, 0, 1);
 
 		for (int i = 0; i < waypoint.length; i++)
 			if (MSMath.GetDistance(waypoint[i], playerPosition) <= Game.MS / 3)
