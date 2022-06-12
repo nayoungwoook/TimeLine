@@ -34,7 +34,7 @@ public class Stage {
 		for (int i = 0; i < image.getWidth(); i++) {
 			for (int j = 0; j < image.getHeight(); j++) {
 				if (new Color(image.getRGB(i, j)).equals(Color.white)) {
-					colboxes.add(new ColBox(i * Game.MS + CONST_OF_TILE_X, (j - 1) * Game.MS + CONST_OF_TILE_Y));
+					colboxes.add(new ColBox(i * Game.MS + CONST_OF_TILE_X, (j) * Game.MS + CONST_OF_TILE_Y));
 				}
 			}
 		}

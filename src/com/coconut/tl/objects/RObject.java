@@ -36,6 +36,7 @@ public class RObject extends MSObject {
 	protected TimeLine timeline;
 	public boolean movementPad = false;
 	private int index = -1;
+	public boolean destroyed = false;
 
 	public RObject(RObject.Directions direction, int x, int y, TimeLine timeline) {
 		super(x, y, Game.MS, Game.MS);
@@ -43,7 +44,7 @@ public class RObject extends MSObject {
 		this.timeline = timeline;
 		targetPosition = new MSTrans(x, y);
 		simulatedPosition = new MSTrans(x, y);
-
+		destroyed = false;
 		for (int i = 0; i < Game.timelines.size(); i++) {
 			if (timeline == Game.timelines.get(i)) {
 				index = i;
@@ -100,9 +101,11 @@ public class RObject extends MSObject {
 	public void Render() {
 		super.Render();
 
+		SetVisible(!destroyed);
+
 		if (Main.game.selectedTimeLineIndx == timeline.getLineIndex() && !Main.game.recordSystem.run
 				&& Main.game.gameState == 1 && !(MSInput.mouseLeft || MSInput.mouseRight)) {
-			
+
 			MSShape.RenderImage(Asset.UI_ARROW_MARKER, (int) position.GetX(),
 					(int) position.GetY() - Game.MS / 3 * 2 - (int) (Math.sin(arrowTimer * 10) * 15), 2.5, Game.MS,
 					Game.MS);

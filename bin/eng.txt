@@ -9,8 +9,17 @@
 	"STAGES" : {
 		"1":"stage 01 - let's start",
 		"2":"stage 02 - moves like jagger",
-		"3":"stage 03 - The ROCK (Not Dwayne Johnson)",
+		"3":"stage 03 - We will rock you",
 		"4":"stage 04 - FACE TIME",
 		"5":"stage 05 - Ma zi mak stage",
 	},
+	
+	"TUTOR1" : "This dude is an object button. Click this to unlock the timeline.",
+	"TUTOR2" : "This dude is the selector button. Click this to get selector cursor.",
+	"TUTOR3" : "You can use selector to move timelines",
+	"TUTOR4" : "This dude is the knife button. Click this to get knife cursor",
+	"TUTOR5" : "You can use knife to cut timelines",
+	"TUTOR6" : "This dude is the play button. Click to replay your stage",
+	"TUTOR7" : "See that green tile over there? All you have to do is put that vitamin-like guy in there. That's easy, right?",
+
 }

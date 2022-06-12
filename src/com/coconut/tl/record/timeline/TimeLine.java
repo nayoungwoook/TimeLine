@@ -91,22 +91,21 @@ public class TimeLine {
 	public void createOwnerObject(boolean init) {
 		if (object.equals("rock")) {
 			this.ownerObject = new Rock(startDir, startX, startY, this);
-			
-			if(init)
+			if (init)
 				createFullMoveNodes(RObject.Module.MOVE);
 		}
 		if (object.equals("directionpad")) {
 			this.ownerObject = new DirectionPad(startDir, startX, startY, this);
 			this.ownerObject.switched = switched;
-			
-			if(init)
+
+			if (init)
 				createFullMoveNodes(RObject.Module.SWITCH);
 		}
 		if (object.equals("movementpad")) {
 			this.ownerObject = new MovementPad(startDir, startX, startY, this);
 			this.ownerObject.switched = switched;
-			
-			if(init)
+
+			if (init)
 				createFullMoveNodes(RObject.Module.SWITCH);
 		}
 		this.replayObjectTargetPosition.SetTransform(startX, startY);
@@ -159,16 +158,15 @@ public class TimeLine {
 						if (!locked) {
 							for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
 								Game.particles.add(new ClearParticle(Game.MS, yy));
-							
+
 							Main.game.unlockedTimelineCount++;
 						} else {
 							for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
 								Game.particles.add(new DieParticle(Game.MS, yy));
-							
+
 							this.bundles.clear();
-							this.initBundle();
 							this.createOwnerObject(true);
-								
+							this.initBundle();
 							Main.game.unlockedTimelineCount--;
 						}
 

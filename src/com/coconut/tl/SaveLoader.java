@@ -11,7 +11,7 @@ public class SaveLoader {
 
 	public JSONObject saveData = new JSONObject();
 
-	public void saveGameData() {
+	public void writeSaveFile() {
 		if (Main.select == null)
 			System.out.println("stage select state is null!");
 
@@ -20,12 +20,8 @@ public class SaveLoader {
 
 		for (int i = 0; i < 5; i++)
 			_res.getJSONObject("CLEAR").put(i + "", Main.select.stageCleared[i]);
-
-	}
-
-	public void writeSaveFile() {
-		String str = "test";
-		byte[] bytes = str.getBytes();
+		
+		byte[] bytes = _res.toString().getBytes();
 		File file = new File("res/savefile.txt");
 		File aFile = new File(file.getAbsolutePath());
 		System.out.println(aFile.getPath());
@@ -40,7 +36,6 @@ public class SaveLoader {
 	}
 
 	public void readSaveFile() {
-//		System.out.println(ClassLoader.getSystemResourceAsStream("savefile.txt"));
 		InputStream is = ClassLoader.getSystemResourceAsStream("savefile.txt");
 		String _read = "";
 		int index = 0;

@@ -1,5 +1,6 @@
 package com.coconut.tl.stages;
 
+import com.coconut.tl.asset.Asset;
 import com.coconut.tl.objects.RObject;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.state.Game;
@@ -10,6 +11,7 @@ public class Stage03 extends Stage {
 		super(game);
 		playerNodeSize = 36;
 		clearPosition.SetTransform(CONST_OF_TILE_X + Game.MS * 19, CONST_OF_TILE_Y + Game.MS * 2);
+		createColBoxes(Asset.STAGE_COLS[2].GetImage());
 	}
 
 	@Override

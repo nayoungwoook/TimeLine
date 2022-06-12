@@ -98,6 +98,18 @@ public class Asset {
 			new MSSprite("img/die_particle.png").CutImage(16 * 3, 0, 16, 16),
 			new MSSprite("img/die_particle.png").CutImage(16 * 4, 0, 16, 16), };
 
+	public static final MSSprite MOVEMENT_PAD_PARTICLE[] = { new MSSprite("img/padeffect.png").CutImage(0, 16, 16, 16),
+			new MSSprite("img/padeffect.png").CutImage(16, 16, 16, 16),
+			new MSSprite("img/padeffect.png").CutImage(16 * 2, 16, 16, 16),
+			new MSSprite("img/padeffect.png").CutImage(16 * 3, 16, 16, 16),
+			new MSSprite("img/padeffect.png").CutImage(16 * 4, 16, 16, 16), };
+
+	public static final MSSprite DIRECTION_PAD_PARTICLE[] = { new MSSprite("img/padeffect.png").CutImage(0, 0, 16, 16),
+			new MSSprite("img/padeffect.png").CutImage(16, 0, 16, 16),
+			new MSSprite("img/padeffect.png").CutImage(16 * 2, 0, 16, 16),
+			new MSSprite("img/padeffect.png").CutImage(16 * 3, 0, 16, 16),
+			new MSSprite("img/padeffect.png").CutImage(16 * 4, 0, 16, 16), };
+
 	public static final MSSprite CLEAR_PARTICLE[] = { new MSSprite("img/clear_particle.png").CutImage(0, 0, 16, 16),
 			new MSSprite("img/clear_particle.png").CutImage(16, 0, 16, 16),
 			new MSSprite("img/clear_particle.png").CutImage(16 * 2, 0, 16, 16),
@@ -129,9 +141,14 @@ public class Asset {
 
 	public static final MSSprite TUTORIAL1[] = { new MSSprite("img/Stages/tutorial1.png").CutImage(0, 0, 384, 208),
 			new MSSprite("img/Stages/tutorial1.png").CutImage(384, 0, 384, 208),
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384, 0, 384, 208),
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 2, 0, 384, 208),
 			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 2, 0, 384, 208),
 			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 3, 0, 384, 208),
-			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 4, 0, 384, 208), };
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 3, 0, 384, 208),
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 4, 0, 384, 208),
+			new MSSprite("img/Stages/tutorial1.png").CutImage(384 * 5, 0, 384, 208),
+			};
 
 	public static final MSSprite STAGE_SELECT[] = { new MSSprite("img/chapter1StageSelect.png"), };
 

@@ -53,7 +53,7 @@ public class Player extends RObject {
 				Main.game.stage.cleared = true;
 				
 				Main.saveLoader.saveData.getJSONObject("CLEAR").put(Main.game.stageIndex + "", true);
-				Main.saveLoader.saveGameData();
+				Main.saveLoader.writeSaveFile();
 
 				MSCamera.position.Translate((int) Math.round(Math.random() * 30) - 15,
 						(int) Math.round(Math.random() * 30) - 15, 0.1);

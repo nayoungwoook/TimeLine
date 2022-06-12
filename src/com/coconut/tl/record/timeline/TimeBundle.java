@@ -38,8 +38,13 @@ public class TimeBundle {
 
 	public void cutBundle() {
 
+		if (Main.game.cutCount > 2)
+			return;
+
 		if (Main.game.lockedInput)
 			return;
+
+		Main.game.cutCount++;
 
 		int cutClickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE - startPosition - 1;
 

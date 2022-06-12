@@ -51,9 +51,10 @@ public class Game implements MSState {
 	public Stage stage;
 
 	public int selectedTimeLineIndx = -1;
+	public int cutCount = 0;
 
 	public boolean playerPositionReset = false;
- 
+
 	// 스테이트 전환후, 기다리는 타이머
 	private double awaitTimer = 0;
 
@@ -67,7 +68,7 @@ public class Game implements MSState {
 
 	public int unlockedTimelineCount = 0;
 	public boolean lockedInput = false;
-	
+
 	public Game(int stageIndex, int chapter) {
 		this.stageIndex = stageIndex;
 		this.chapter = chapter;
@@ -326,7 +327,7 @@ public class Game implements MSState {
 			MSShape.SetFont(Asset.FONT[1]);
 
 			int y = MSDisplay.height / 7 * 5;
-			if (Math.abs(y - MSInput.mousePointer.GetY() - 13) <= 15 && stageIndex + 1 <= 5) {
+			if (Math.abs(y - MSInput.mousePointer.GetY() - 13) <= 15 && stageIndex + 1 <= 15) {
 				MSShape.SetColor(new Color(255, 255, 255));
 				if (MSInput.mouseLeft && transitions.size() == 0) {
 					Main.game = new Game(stageIndex + 1, 1);
@@ -394,6 +395,9 @@ public class Game implements MSState {
 
 		for (int i = 0; i < particles.size(); i++)
 			particles.get(i).Render();
+
+		for (int i = 0; i < stage.colboxes.size(); i++)
+			stage.colboxes.get(i).render();
 
 		for (int i = 0; i < timelines.size(); i++) {
 			if (timelines.get(i).ownerObject != null) {
@@ -479,69 +483,76 @@ public class Game implements MSState {
 	public void updateReplayTurn() {
 
 		// 현재 노드에 따라 화면 구성하기 (리플레이)
-		for (int i = 0; i < timelines.size(); i++) {
-			TimeBundle _curBundle = timelines.get(i).getBundleByTime(recordSystem.getTimer());
-			TimeNode _curNode = null;
+		if (gameState == 1 && recordSystem.run) {
+			for (int i = 0; i < timelines.size(); i++) {
+				TimeBundle _curBundle = timelines.get(i).getBundleByTime(recordSystem.getTimer());
+				TimeNode _curNode = null;
 
-			if (_curBundle != null) {
-				_curNode = _curBundle.getNodeByTime(recordSystem.getTimer());
+				if (_curBundle != null) {
+					_curNode = _curBundle.getNodeByTime(recordSystem.getTimer());
+				}
+
+				if (_curNode != null) {
+					recordSystem.createPausedGame();
+				}
 			}
 
-			if (_curNode != null) {
-				recordSystem.createPausedGame();
-			}
-		}
-
-		// 타이머 돌리기
-		if (recordSystem.run)
+			// 타이머 돌리기
 			recordSystem.runTimer();
+		}
 	}
 
 	public void checkCollision() {
 
 		// 업데이트 하고 미리 충돌 체킹 (레코딩 부분)
-		for (int i = 0; i < timelines.size(); i++) {
-			if (timelines.get(i).ownerObject != null && timelines.get(i).ownerObject.getClass() == Rock.class) {
-				((Rock) timelines.get(i).ownerObject).checkInGameCollision();
+		for (int a = 0; a < Game.timelines.size(); a++) {
+//			System.out.println(timelines.get(a).ownerObject);
+			if (Game.timelines.get(a).ownerObject != null
+					&& Game.timelines.get(a).ownerObject.getClass() == Rock.class) {
+				((Rock) Game.timelines.get(a).ownerObject).checkInGameCollision();
 			}
-			if (timelines.get(i).ownerObject != null && timelines.get(i).ownerObject.getClass() == DirectionPad.class) {
-				((DirectionPad) timelines.get(i).ownerObject).checkInGameCollision();
+			if (Game.timelines.get(a).ownerObject != null
+					&& Game.timelines.get(a).ownerObject.getClass() == DirectionPad.class) {
+				((DirectionPad) Game.timelines.get(a).ownerObject).checkInGameCollision();
 			}
-			if (timelines.get(i).ownerObject != null && timelines.get(i).ownerObject.getClass() == MovementPad.class) {
-				((MovementPad) timelines.get(i).ownerObject).checkInGameCollision();
+			if (Game.timelines.get(a).ownerObject != null
+					&& Game.timelines.get(a).ownerObject.getClass() == MovementPad.class) {
+				((MovementPad) Game.timelines.get(a).ownerObject).checkInGameCollision();
 			}
 		}
 
-		if (stage != null) {
-			for (int i = 0; i < stage.colboxes.size(); i++) {
-				stage.colboxes.get(i).checkCollision();
+		if (Main.game.stage != null) {
+			for (int a = 0; a < Main.game.stage.colboxes.size(); a++) {
+				Main.game.stage.colboxes.get(a).checkCollision();
 			}
 		}
 	}
 
 	public void updateRecordTurn() {
 		if (recordSystem.isRecording()) {
-			checkCollision();
 
-			recordSystem.record();
-
-			if (_backupPlayerDied) {
-				return;
+			if (gameState == 0 || (gameState == 1 && recordSystem.run)) {
+				checkCollision();
 			}
+		}
 
-			for (int i = 0; i < timelines.size(); i++) {
-				if (timelines.get(i).ownerObject != null) {
-					if (timelines.get(i).getBundleByTime((int) timer) != null)
-						timelines.get(i).ownerObject.turn(
-								timelines.get(i).getBundleByTime((int) timer).getNodeByTime((int) timer).getDataType());
-				}
+		recordSystem.record();
+
+		if (_backupPlayerDied) {
+			return;
+		}
+
+		for (int i = 0; i < timelines.size(); i++) {
+			if (timelines.get(i).ownerObject != null) {
+				if (timelines.get(i).getBundleByTime((int) timer) != null)
+					timelines.get(i).ownerObject.turn(
+							timelines.get(i).getBundleByTime((int) timer).getNodeByTime((int) timer).getDataType());
 			}
 		}
 	}
 
 	@Override
 	public void Update() {
-
 		if (gameState == 0) {
 			targetTimelineY = 400;
 		} else if (gameState == 1) {
@@ -560,12 +571,11 @@ public class Game implements MSState {
 			cursorImage = Asset.UI_CURSOR[1];
 
 		timelineY += (targetTimelineY - timelineY) / 20;
-		
-		if(MSInput.keys[KeyEvent.VK_S] && MSInput.keys[KeyEvent.VK_CONTROL]) {
-			System.out.println("s");
+
+		if (MSInput.keys[KeyEvent.VK_S] && MSInput.keys[KeyEvent.VK_CONTROL]) {
 			Main.saveLoader.writeSaveFile();
 		}
-		
+
 		if (MSInput.keys[KeyEvent.VK_SPACE] && !stageStarted) {
 
 			if (!stageStarted) {
