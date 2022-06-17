@@ -22,7 +22,6 @@ public class Rock extends RObject {
 		if (Main.game.gameState == 1 && !Main.game.recordSystem.run)
 			return;
 
-		System.out.println("effect");
 		Game.particles.add(new DieParticle((int) effectPosition.GetX(), (int) effectPosition.GetY()));
 
 		Asset.WAV_DIE.play();
