@@ -36,7 +36,7 @@ public class Stage01 extends Stage {
 		if (MSInput.keys[KeyEvent.VK_SPACE]) {
 			tutorialIndex++;
 
-			if (tutorialIndex > Asset.TUTORIAL1.length - 1)
+			if (tutorialIndex > Asset.TUTORIAL1.length - 2)
 				tutorial = false;
 
 			MSInput.keys[KeyEvent.VK_SPACE] = false;

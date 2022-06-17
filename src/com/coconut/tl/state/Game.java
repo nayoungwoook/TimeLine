@@ -145,12 +145,12 @@ public class Game implements MSState {
 			}
 
 			if (img != null)
-				MSShape.RenderUIImage(img, (1) * MS,
+				MSShape.RenderUIImage(img, MS,
 						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3.2,
 						MS / 3 * 2, MS / 3 * 2);
 
 			if (timeline.locked) {
-				MSShape.RenderUIImage(Asset.UI_DIE_MARKER, (1) * MS,
+				MSShape.RenderUIImage(Asset.UI_DIE_MARKER, MS,
 						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 4,
 						MS, MS);
 			}
@@ -396,8 +396,8 @@ public class Game implements MSState {
 		for (int i = 0; i < particles.size(); i++)
 			particles.get(i).Render();
 
-		for (int i = 0; i < stage.colboxes.size(); i++)
-			stage.colboxes.get(i).render();
+//		for (int i = 0; i < stage.colboxes.size(); i++)
+//			stage.colboxes.get(i).render();
 
 		for (int i = 0; i < timelines.size(); i++) {
 			if (timelines.get(i).ownerObject != null) {
@@ -502,15 +502,8 @@ public class Game implements MSState {
 		}
 	}
 
-	public void checkCollision() {
-
-		// 업데이트 하고 미리 충돌 체킹 (레코딩 부분)
+	public void checkTileCollision() {
 		for (int a = 0; a < Game.timelines.size(); a++) {
-//			System.out.println(timelines.get(a).ownerObject);
-			if (Game.timelines.get(a).ownerObject != null
-					&& Game.timelines.get(a).ownerObject.getClass() == Rock.class) {
-				((Rock) Game.timelines.get(a).ownerObject).checkInGameCollision();
-			}
 			if (Game.timelines.get(a).ownerObject != null
 					&& Game.timelines.get(a).ownerObject.getClass() == DirectionPad.class) {
 				((DirectionPad) Game.timelines.get(a).ownerObject).checkInGameCollision();
@@ -520,10 +513,18 @@ public class Game implements MSState {
 				((MovementPad) Game.timelines.get(a).ownerObject).checkInGameCollision();
 			}
 		}
+	}
 
+	public void checkCollision() {
 		if (Main.game.stage != null) {
 			for (int a = 0; a < Main.game.stage.colboxes.size(); a++) {
 				Main.game.stage.colboxes.get(a).checkCollision();
+			}
+		}
+		for (int a = 0; a < Game.timelines.size(); a++) {
+			if (Game.timelines.get(a).ownerObject != null
+					&& Game.timelines.get(a).ownerObject.getClass() == Rock.class) {
+				((Rock) Game.timelines.get(a).ownerObject).checkInGameCollision();
 			}
 		}
 	}
@@ -533,6 +534,7 @@ public class Game implements MSState {
 
 			if (gameState == 0 || (gameState == 1 && recordSystem.run)) {
 				checkCollision();
+				checkTileCollision();
 			}
 		}
 
@@ -561,6 +563,8 @@ public class Game implements MSState {
 			else
 				targetTimelineY = -20;
 		}
+
+		recordSystem.update();
 
 		if (stage.cleared)
 			targetTimelineY = 400;

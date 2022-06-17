@@ -26,13 +26,14 @@ public class RecordSystem {
 	public void createPausedGame() {
 
 		Main.game.playerDied = false;
+
 		for (int j = 0; j < Game.timelines.size(); j++) {
 
 			if (Game.timelines.get(j).ownerObject != null) {
 				Game.timelines.get(j).backPosition.SetTransform(Game.timelines.get(j).ownerObject.position.GetX(),
 						Game.timelines.get(j).ownerObject.position.GetY());
 			}
-
+			
 			Game.timelines.get(j)._reset = false;
 			Game.timelines.get(j).ownerObject = null;
 		}
@@ -40,13 +41,13 @@ public class RecordSystem {
 		for (int i = 0; i < timer + 1; i++) {
 			Main.game.replayTimer = i;
 
-			// 리플레이 전에 충돌 체킹
-			if (Main.game != null)
-				Main.game.checkCollision();
+			Main.game.checkCollision();
+			Main.game.checkTileCollision();
 			
 			for (int j = 0; j < Game.timelines.size(); j++) {
 				TimeBundle _bundle = Game.timelines.get(j).getBundleByTime(i);
 				if (_bundle != null) {
+
 					TimeNode _node = _bundle.getNodeByTime(i);
 					if (_node != null) {
 						if (!Game.timelines.get(j)._reset) {
@@ -74,11 +75,17 @@ public class RecordSystem {
 				if (Game.timelines.get(j).ownerObject != null) {
 					Game.timelines.get(j).ownerObject.position.SetTransform(Game.timelines.get(j).backPosition.GetX(),
 							Game.timelines.get(j).backPosition.GetY());
-					
+
 					Game.timelines.get(j).replayObjectTargetPosition.SetTransform(
 							Game.timelines.get(j).ownerObject.position.GetX(),
 							Game.timelines.get(j).ownerObject.position.GetY());
 				}
+			}
+		}
+
+		for (int i = 0; i < Game.timelines.size(); i++) {
+			if (Game.timelines.get(i).ownerObject != null && Game.timelines.get(i).ownerObject.destroyed) {
+				Game.timelines.get(i).ownerObject = null;
 			}
 		}
 	}

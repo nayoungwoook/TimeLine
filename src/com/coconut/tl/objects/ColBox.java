@@ -24,47 +24,50 @@ public class ColBox {
 		MSShape.RenderRect((int) position.GetX(), (int) position.GetY(), 3.5, Game.MS, Game.MS);
 	}
 
+	private void effect(MSTrans effectPosition) {
+		if (Main.game.gameState == 1 && !Main.game.recordSystem.run)
+			return;
+
+		Game.particles.add(new DieParticle((int) effectPosition.GetX(), (int) effectPosition.GetY()));
+
+		Asset.WAV_DIE.play();
+	}
+
+	private boolean isCollision(RObject _obj) {
+		if (_obj != null) {
+			if (MSMath.GetDistance(position, _obj.targetPosition) <= Game.MS / 3)
+				return true;
+		}
+		return false;
+	}
+
 	public void checkCollision() {
 		for (int i = 0; i < Game.timelines.size(); i++) {
 			RObject _obj = Game.timelines.get(i).getOwnerObject();
 
-			if (_obj != null) {
-				if (Math.abs(position.GetX() - _obj.simulatedPosition.GetX()) <= Game.MS / 2) {
-					if (Math.abs(position.GetY() - _obj.simulatedPosition.GetY()) <= Game.MS / 2) {
-						MSTrans effectPosition = new MSTrans(0, 0);
+			if (isCollision(_obj)) {
+				if (_obj != null && _obj.getClass() == Player.class) {
+					Main.game.playerDied = true;
+					Main.game.playerDiedPosition.SetTransform(Game.timelines.get(i).ownerObject.position.GetX(),
+							Game.timelines.get(i).ownerObject.position.GetY());
 
-						if (_obj.getClass().equals(Rock.class)) {
-							_obj.destroyed = true;
-							effectPosition.SetTransform(_obj.position.GetX(), _obj.position.GetY());
-						}
+					if ((Main.game.gameState == 1 && Main.game.recordSystem.run) || Main.game.gameState == 0) {
+						effect(position);
+						Main.game.playerDie();
+					}
 
-						if (_obj.getClass().equals(Player.class)) {
-							MSTrans playerPosition = new MSTrans(0, 0);
-							if (MSMath.GetDistance(_obj.simulatedPosition, position) <= 2)
-								playerPosition.SetTransform(_obj.simulatedPosition.GetX(),
-										_obj.simulatedPosition.GetY());
-							if (MSMath.GetDistance(_obj.position, position) <= 2)
-								playerPosition.SetTransform(_obj.position.GetX(), _obj.position.GetY());
+					Game.timelines.get(i).ownerObject = null;
+				}
 
-							effectPosition.SetTransform(playerPosition.GetX(), playerPosition.GetY());
-							Main.game.playerDied = true;
-							Main.game.playerDiedPosition.SetTransform(position.GetX(), position.GetY());
-
-							if ((Main.game.gameState == 1 && Main.game.recordSystem.run) || Main.game.gameState == 0)
-								Main.game.playerDie();
-
-							Game.timelines.get(i).ownerObject = null;
-						}
-
-						if (Main.game.recordSystem.run) {
-							for (int j = 0; j < (int) Math.round(Math.random() * 5) + 5; j++) {
-								Game.particles
-										.add(new DieParticle((int) effectPosition.GetX(), (int) effectPosition.GetY()));
-							}
-
-							Asset.WAV_DIE.play();
+				if (_obj != null && _obj.getClass() == Rock.class) {
+					if (!_obj.destroyed && (Main.game.gameState == 1 && Main.game.recordSystem.run)
+							|| Main.game.gameState == 0) {
+						if (Main.game.recordSystem.getTimer() == Main.game.replayTimer) {
+							effect(position);
 						}
 					}
+
+					_obj.destroyed = true;
 				}
 			}
 		}

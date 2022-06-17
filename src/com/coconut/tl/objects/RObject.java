@@ -35,8 +35,8 @@ public class RObject extends MSObject {
 	public boolean switched = true;
 	protected TimeLine timeline;
 	public boolean movementPad = false;
-	private int index = -1;
 	public boolean destroyed = false;
+//	private int index = -1;
 
 	public RObject(RObject.Directions direction, int x, int y, TimeLine timeline) {
 		super(x, y, Game.MS, Game.MS);
@@ -44,10 +44,9 @@ public class RObject extends MSObject {
 		this.timeline = timeline;
 		targetPosition = new MSTrans(x, y);
 		simulatedPosition = new MSTrans(x, y);
-		destroyed = false;
 		for (int i = 0; i < Game.timelines.size(); i++) {
 			if (timeline == Game.timelines.get(i)) {
-				index = i;
+//				index = i;
 			}
 		}
 	}
@@ -101,11 +100,8 @@ public class RObject extends MSObject {
 	public void Render() {
 		super.Render();
 
-		SetVisible(!destroyed);
-
 		if (Main.game.selectedTimeLineIndx == timeline.getLineIndex() && !Main.game.recordSystem.run
 				&& Main.game.gameState == 1 && !(MSInput.mouseLeft || MSInput.mouseRight)) {
-
 			MSShape.RenderImage(Asset.UI_ARROW_MARKER, (int) position.GetX(),
 					(int) position.GetY() - Game.MS / 3 * 2 - (int) (Math.sin(arrowTimer * 10) * 15), 2.5, Game.MS,
 					Game.MS);
@@ -113,12 +109,8 @@ public class RObject extends MSObject {
 
 		if (MSInput.keys[KeyEvent.VK_CONTROL]) {
 			MSShape.SetColor(Color.white);
-			MSShape.SetFont(Asset.FONT[3]);
-
-			if (index > 0) {
-				MSShape.RenderText("" + index, (int) position.GetX() - Game.MS / 2, (int) position.GetY() - Game.MS / 2,
-						3);
-			}
+			MSShape.SetFont(Asset.FONT[0]);
+			MSShape.RenderText("" + destroyed, (int) position.GetX(), (int) position.GetY() - Game.MS / 2, 3);
 		}
 	}
 
@@ -143,8 +135,10 @@ public class RObject extends MSObject {
 			if (_bundle != null)
 				_node = _bundle.getNodeByTime(Main.game.recordSystem.getTimer());
 
-			if ((Main.game.gameState == 1 && Main.game.recordSystem.run && _node != null
-					&& (Main.game.recordSystem.getTimer() == Main.game.replayTimer)) || Main.game.gameState == 0) {
+			if (!destroyed
+					&& (Main.game.gameState == 1 && Main.game.recordSystem.run && _node != null
+							&& (Main.game.recordSystem.getTimer() == Main.game.replayTimer))
+					|| Main.game.gameState == 0) {
 
 				SetSize(Game.MS * 2, Game.MS / 3 * 2);
 

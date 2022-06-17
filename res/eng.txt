@@ -2,7 +2,7 @@
 	"START_GAME" : "start game",
 	"SETTING" : "setting",
 	"CREDIT" : "credit",
-	"PRESS_SPACE":"press tsetestse space to enter",
+	"PRESS_SPACE":"press space to enter",
 	"CHAPTERS" : {
 		"1":"CHAPTER 1 : \"DUNGEON\"",
 	},

@@ -10,6 +10,7 @@ import com.sun.glass.events.KeyEvent;
 
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.input.MSInput;
+import dev.suback.marshmallow.object.MSObject;
 import dev.suback.marshmallow.object.shape.MSShape;
 import dev.suback.marshmallow.state.MSState;
 
@@ -29,7 +30,8 @@ public class Title implements MSState {
 		}
 	}
 
-	ArrayList<Transition> transitions = new ArrayList<>();
+	private ArrayList<Transition> transitions = new ArrayList<>();
+	private ArrayList<BigPinkCookie> bigPinkCookies = new ArrayList<>();
 
 	private int selection = 0;
 
@@ -44,8 +46,8 @@ public class Title implements MSState {
 				MSDisplay.height);
 
 		// CURSOR
-		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX() + 15, (int) MSInput.mousePointer.GetY(),
-				10, 70, 70);
+		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX() + 15,
+				(int) MSInput.mousePointer.GetY(), 10, 70, 70);
 
 		renderButton(Buttons.START);
 		renderButton(Buttons.SETTING);
@@ -53,6 +55,9 @@ public class Title implements MSState {
 
 		for (int i = 0; i < transitions.size(); i++)
 			transitions.get(i).Render();
+
+		for (int i = 0; i < bigPinkCookies.size(); i++)
+			bigPinkCookies.get(i).Render();
 	}
 
 	private void renderButton(Buttons btn) {
@@ -95,6 +100,15 @@ public class Title implements MSState {
 
 		Main.display.pack();
 
+		if (MSInput.keys[KeyEvent.VK_B]) {
+
+			Asset.WAV_BIG_PINK_COOKIE.play();
+			
+			for (int i = 0; i < (int) Math.round(Math.random() * 3) + 2; i++)
+				bigPinkCookies.add(new BigPinkCookie(bigPinkCookies));
+			MSInput.keys[KeyEvent.VK_B] = false;
+		}
+
 		if (MSInput.keys[KeyEvent.VK_W] && selection > 0) {
 			selection--;
 
@@ -107,6 +121,9 @@ public class Title implements MSState {
 			MSInput.keys[KeyEvent.VK_S] = false;
 		}
 
+		for (int i = 0; i < bigPinkCookies.size(); i++)
+			bigPinkCookies.get(i).Update();
+
 		for (int i = 0; i < transitions.size(); i++)
 			transitions.get(i).Update();
 
@@ -118,5 +135,30 @@ public class Title implements MSState {
 			}
 		}
 	}
+}
 
+class BigPinkCookie extends MSObject {
+
+	private int xv, yv;
+	private ArrayList<BigPinkCookie> ar;
+
+	public BigPinkCookie(ArrayList<BigPinkCookie> ar) {
+		super((int) Math.round(Math.random() * MSDisplay.width), MSDisplay.height, 70, 70);
+		SetSprite(Asset.BIG_PINK_COOKIE);
+
+		xv = (int) Math.round(Math.random() * 50) - 25;
+		yv = (int) -(Math.round(Math.random() * 15) + 15);
+		position.SetZ(3);
+		this.ar = ar;
+	}
+
+	public void Update() {
+		yv++;
+		xv += (0 - xv) / 10;
+		
+		if (position.GetY() >= MSDisplay.height + 100)
+			ar.remove(this);
+
+		position.Translate(xv, yv);
+	}
 }

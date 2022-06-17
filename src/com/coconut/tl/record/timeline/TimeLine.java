@@ -77,7 +77,7 @@ public class TimeLine {
 
 	private void createFullMoveNodes(RObject.Module dataType) {
 		if (Main.game.stage != null && Main.game.stage.playerNodeSize != 0)
-			if (bundles.get(0).nodes.size() < Main.game.stage.playerNodeSize)
+			if (bundles.size() >= 1 && bundles.get(0).nodes.size() < Main.game.stage.playerNodeSize)
 				for (int i = 0; i < Main.game.stage.playerNodeSize; i++)
 					bundles.get(0).nodes.add(new TimeNode(dataType));
 	}
@@ -147,36 +147,37 @@ public class TimeLine {
 		int xx = Game.MS;
 
 		if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3) {
-			Main.game.selectedTimeLineIndx = getLineIndex();
 
-			if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 2) {
-				if (MSInput.mouseLeft) {
+			if (Main.game.getTimeLineScroll() <= lineIndex && Main.game.getTimeLineScroll() + 3 > lineIndex) {
+				Main.game.selectedTimeLineIndx = getLineIndex();
+				if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 2
+						&& !Main.game.recordSystem.bundleSelected) {
+					if (MSInput.mouseLeft) {
+						if ((locked && Main.game.unlockedTimelineCount < 4) || !locked) {
+							locked = !locked;
+							if (!locked) {
+								for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
+									Game.particles.add(new ClearParticle(Game.MS, yy));
 
-					if ((locked && Main.game.unlockedTimelineCount < 4) || !locked) {
-						locked = !locked;
+								Main.game.unlockedTimelineCount++;
+							} else {
+								for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
+									Game.particles.add(new DieParticle(Game.MS, yy));
 
-						if (!locked) {
-							for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
-								Game.particles.add(new ClearParticle(Game.MS, yy));
+								Main.game.cutCount -= bundles.size() - 1;
 
-							Main.game.unlockedTimelineCount++;
-						} else {
-							for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
-								Game.particles.add(new DieParticle(Game.MS, yy));
+								this.bundles.clear();
+								this.initBundle();
+								this.createOwnerObject(true);
+								Main.game.unlockedTimelineCount--;
+							}
 
-							this.bundles.clear();
-							this.createOwnerObject(true);
-							this.initBundle();
-							Main.game.unlockedTimelineCount--;
 						}
-
+						MSInput.mouseLeft = false;
 					}
-
-					MSInput.mouseLeft = false;
 				}
 			}
 		}
-
 	}
 
 	public TimeBundle getBundleByTime(int time) {

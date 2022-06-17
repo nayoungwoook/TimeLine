@@ -48,8 +48,7 @@ public class StageSelect implements MSState {
 	private void getLockedOnStageIndex() {
 		Main.saveLoader.readSaveFile();
 		JSONObject data = Main.saveLoader.saveData.getJSONObject("CLEAR");
-
-		for (int i = 0; i < data.length(); i++) {
+		for (int i = 0; i < data.length() - 1; i++) {
 			if (data.getBoolean((i + 1) + "")) {
 				stageCleared[i] = true;
 				if (i + 1 < stageCleared.length)

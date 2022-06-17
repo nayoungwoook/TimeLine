@@ -37,16 +37,13 @@ public class TimeBundle {
 	}
 
 	public void cutBundle() {
-
 		if (Main.game.cutCount > 2)
 			return;
 
 		if (Main.game.lockedInput)
 			return;
 
-		Main.game.cutCount++;
-
-		int cutClickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE - startPosition - 1;
+		int cutClickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE - startPosition;
 
 		TimeBundle _subBundle = new TimeBundle(cutClickPos + startPosition + 1, timeline);
 		if (cutClickPos >= 1 && cutClickPos < nodes.size() - 1) {
@@ -65,6 +62,8 @@ public class TimeBundle {
 				nodes.remove(nodes.get(cutClickPos + 1));
 			}
 
+			if (_subBundle.nodes.size() > 0)
+				Main.game.cutCount++;
 			timeline.bundles.add(_subBundle);
 		}
 
