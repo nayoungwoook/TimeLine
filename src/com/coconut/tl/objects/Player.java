@@ -42,16 +42,11 @@ public class Player extends RObject {
 				Main.game.playerDie();
 		}
 
-		if ((int) MSMath.GetDistance(new MSTrans(Game.timelines.get(0).startX, Game.timelines.get(0).startY),
-				position) <= Game.MS / 2) {
-			Main.game.playerPositionReset = true;
-		}
-
 		if (MSMath.GetDistance(Main.game.stage.clearPosition, position) <= 2) {
-			if (!Main.game.stage.cleared && Main.game.recordSystem.run && Main.game.playerPositionReset) {
+			if (!Main.game.stage.cleared && Main.game.recordSystem.run) {
 
 				Main.game.stage.cleared = true;
-				
+
 				Main.saveLoader.saveData.getJSONObject("CLEAR").put(Main.game.stageIndex + "", true);
 				Main.saveLoader.writeSaveFile();
 

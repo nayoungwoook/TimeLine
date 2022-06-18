@@ -1,11 +1,10 @@
 package com.coconut.tl.objects.tile;
 
 import com.coconut.tl.Main;
+
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.DirectionParticle;
-import com.coconut.tl.objects.Player;
 import com.coconut.tl.objects.RObject;
-import com.coconut.tl.objects.Rock;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.state.Game;
 
@@ -37,19 +36,20 @@ public class DirectionPad extends RObject {
 
 			if (_obj != null && _obj != this) {
 				if (MSMath.GetDistance(_obj.simulatedPosition, simulatedPosition) <= 2) {
-					if (_obj.getClass().equals(Player.class) || _obj.getClass().equals(Rock.class)) {
-
-						if (switched) {
+					if (switched) {
+						if (MSMath.GetDistance(_obj.position, position) <= 2) {
 							if (Main.game.recordSystem.run) {
-								if (MSMath.GetDistance(_obj.position, position) <= 2) {
+								if (Main.game.replayTimer == Main.game.recordSystem.getTimer()) {
+
 									// effect
-									Game.particles
-											.add(new DirectionParticle((int) position.GetX(), (int) position.GetY()));
+									for (int j = 0; j < (int) Math.round(Math.random() * 2) + 3; j++)
+										Game.particles.add(
+												new DirectionParticle((int) position.GetX(), (int) position.GetY()));
 								}
 							}
-
-							_obj.direction = direction;
 						}
+
+						_obj.direction = direction;
 					}
 				}
 			}

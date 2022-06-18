@@ -33,17 +33,17 @@ public class RecordSystem {
 				Game.timelines.get(j).backPosition.SetTransform(Game.timelines.get(j).ownerObject.position.GetX(),
 						Game.timelines.get(j).ownerObject.position.GetY());
 			}
-			
+
 			Game.timelines.get(j)._reset = false;
 			Game.timelines.get(j).ownerObject = null;
 		}
 
-		for (int i = 0; i < timer + 1; i++) {
+		for (int i = -1; i < timer + 1; i++) {
 			Main.game.replayTimer = i;
-
+			
 			Main.game.checkCollision();
 			Main.game.checkTileCollision();
-			
+
 			for (int j = 0; j < Game.timelines.size(); j++) {
 				TimeBundle _bundle = Game.timelines.get(j).getBundleByTime(i);
 				if (_bundle != null) {
@@ -94,7 +94,6 @@ public class RecordSystem {
 	private int tempClickPos = 0;
 
 	public void update() {
-
 		if (Main.game.gameState == 0) {
 			if (timer >= maxRecordTime) {
 				if (recording)
@@ -102,7 +101,7 @@ public class RecordSystem {
 			}
 		}
 
-		int clickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3) / TIME_NODE_SIZE;
+		int clickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3 - Game.MS) / TIME_NODE_SIZE;
 		if (MSInput.mouseRight) {
 			if (!run && !recording) {
 				markerSelected = true;
@@ -119,37 +118,40 @@ public class RecordSystem {
 			timer = 0;
 		if (timer > 8 * (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3))
 			timer = 8 * (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3);
-
-		if (Math.abs(tempClickPos - timer) > 2 && MSInput.mouseRight) {
-			Asset.WAV_UI_MOVE.play();
-			tempClickPos = timer;
-		}
-
+		
 		if (MSInput.mouseLeft || MSInput.mouseRight || MSInput.keys[KeyEvent.VK_D] || MSInput.keys[KeyEvent.VK_A]) {
 
 			if (MSInput.keys[KeyEvent.VK_A]) {
+				Asset.WAV_UI_MOVE.play();
 				timer--;
 				MSInput.keys[KeyEvent.VK_A] = false;
 			}
 			if (MSInput.keys[KeyEvent.VK_D]) {
+				Asset.WAV_UI_MOVE.play();
 				timer++;
 				MSInput.keys[KeyEvent.VK_D] = false;
 			}
 
-			if (!run && !recording) {
-				createPausedGame();
-			}
+		}
+		if (!run && !recording) {
+			createPausedGame();
+		}
+
+		if (Math.abs(tempClickPos - timer) > 0 && MSInput.mouseRight) {
+			Asset.WAV_UI_MOVE.play();
+			tempClickPos = timer;
 		}
 
 		if (MSInput.keys[KeyEvent.VK_SPACE] && Main.game.gameState == 1 && !Main.game.stage.cleared
 				&& !Main.game.lockedInput) {
 			run = !run;
-
+			
+			Main.game.replayTimer = 0;
+			
 			if (run) {
 				Main.game._backupPlayerDied = false;
 				resetTimer();
 			}
-
 			MSInput.keys[KeyEvent.VK_SPACE] = false;
 		}
 	}
@@ -163,12 +165,7 @@ public class RecordSystem {
 	}
 
 	public void resetTimer() {
-		timer = -1;
-
-		Main.game.playerPositionReset = false;
-		for (int i = 0; i < Game.timelines.size(); i++) {
-			Game.timelines.get(i).replayObject = null;
-		}
+		timer = 0;
 	}
 
 	public int getTimer() {
@@ -185,7 +182,8 @@ public class RecordSystem {
 
 	public void changeRecording() {
 		recording = !recording;
-
+		
+		timer = 0;
 		if (!recording) {
 			Main.game.changeGameState(1);
 		}

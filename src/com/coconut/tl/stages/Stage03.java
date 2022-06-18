@@ -44,7 +44,7 @@ public class Stage03 extends Stage {
 				CONST_OF_TILE_Y + Game.MS * 7, RObject.Directions.RIGHT, false));
 
 		Game.timelines.add(new TimeLine(7, "directionpad", CONST_OF_TILE_X + Game.MS * 19,
-				CONST_OF_TILE_Y + Game.MS * 7, RObject.Directions.UP, false));
+				CONST_OF_TILE_Y + Game.MS * 7, RObject.Directions.UP, false, false));
 
 		Game.timelines.add(new TimeLine(8, "rock", CONST_OF_TILE_X, CONST_OF_TILE_Y + Game.MS * 5,
 				RObject.Directions.RIGHT, false));

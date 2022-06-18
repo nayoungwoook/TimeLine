@@ -15,14 +15,12 @@ import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.input.MSInput;
-import dev.suback.marshmallow.object.MSObject;
 import dev.suback.marshmallow.transform.MSTrans;
 
 public class TimeLine {
 
 	public ArrayList<TimeBundle> bundles = new ArrayList<>();
 	public RObject ownerObject;
-	public MSObject replayObject;
 	public MSTrans replayObjectTargetPosition = new MSTrans(0, 0);
 	private int lineIndex = 0;
 	private String object;
@@ -132,11 +130,6 @@ public class TimeLine {
 	}
 
 	public void update() {
-		if (replayObject != null) {
-			double _cxv = (replayObjectTargetPosition.GetX() - replayObject.position.GetX()) / 6,
-					_cyv = (replayObjectTargetPosition.GetY() - replayObject.position.GetY()) / 6;
-			replayObject.position.Translate(_cxv, _cyv);
-		}
 
 		int len = Game.timelines.size();
 		if (len > 4)
@@ -144,7 +137,7 @@ public class TimeLine {
 
 		int yy = (MSDisplay.height - (Game.MS / 7 * 9))
 				- (len + Main.game.getTimeLineScroll() - getLineIndex() - 2) * Game.MS;
-		int xx = Game.MS;
+		int xx = Game.MS * 2;
 
 		if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3) {
 

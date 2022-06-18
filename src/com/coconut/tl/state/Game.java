@@ -1,6 +1,7 @@
 package com.coconut.tl.state;
 
 import java.awt.Color;
+
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -17,7 +18,6 @@ import com.coconut.tl.objects.tile.Tile;
 import com.coconut.tl.record.RecordSystem;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeLine;
-import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.stages.Stage;
 import com.coconut.tl.stages.Stage01;
 import com.coconut.tl.stages.Stage02;
@@ -52,8 +52,6 @@ public class Game implements MSState {
 
 	public int selectedTimeLineIndx = -1;
 	public int cutCount = 0;
-
-	public boolean playerPositionReset = false;
 
 	// 스테이트 전환후, 기다리는 타이머
 	private double awaitTimer = 0;
@@ -118,6 +116,16 @@ public class Game implements MSState {
 		return timelineScroll;
 	}
 
+	private void renderNumber(int num, int x, int y) {
+		int i = 0, div = 1;
+		while ((int) (num / div) != 0) {
+			i++;
+			MSShape.RenderUIImage(Asset.UI_NUMBERS[(int) (num / div % 10)], x + -(MS / 5 * 3) * (i - 3), y, 3.2, MS,
+					MS);
+			div *= 10;
+		}
+	}
+
 	private void renderTimeLine(TimeLine timeline, int index) {
 
 		int TIME_NODE_SIZE = MS / 16 * 2;
@@ -129,7 +137,7 @@ public class Game implements MSState {
 			tLen = 4;
 
 		if (!timeline.getPlayerTimeLine()) {
-			MSShape.RenderUIImage(Asset.UI_TIMELINE_BG[2], (1) * MS,
+			MSShape.RenderUIImage(Asset.UI_TIMELINE_BG[2], (2) * MS,
 					(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3, MS,
 					MS);
 
@@ -144,13 +152,16 @@ public class Game implements MSState {
 				img = Asset.DUNGEON_TILE[15];
 			}
 
+			renderNumber(index, 0,
+					(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY);
+
 			if (img != null)
-				MSShape.RenderUIImage(img, MS,
+				MSShape.RenderUIImage(img, MS * 2,
 						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3.2,
 						MS / 3 * 2, MS / 3 * 2);
 
 			if (timeline.locked) {
-				MSShape.RenderUIImage(Asset.UI_DIE_MARKER, MS,
+				MSShape.RenderUIImage(Asset.UI_DIE_MARKER, MS * 2,
 						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 4,
 						MS, MS);
 			}
@@ -164,17 +175,17 @@ public class Game implements MSState {
 					_img = Asset.UI_TIMELINE_BG[1];
 				}
 
-				MSShape.RenderUIImage(_img, (i + 2) * MS,
+				MSShape.RenderUIImage(_img, (i + 3) * MS,
 						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3,
 						MS, MS);
 
 			} else {
-				MSShape.RenderUIImage(Asset.UI_PLAYER_TIMELINE_BG, (i + 2) * MS, (MSDisplay.height - (MS / 2 * 3))
+				MSShape.RenderUIImage(Asset.UI_PLAYER_TIMELINE_BG, (i + 3) * MS, (MSDisplay.height - (MS / 2 * 3))
 						+ (index - timelineScroll - (tLen - 1)) * MS + MS / 3 + timelineY, 3, MS, MS);
 			}
 
 			if (timeline.locked && !timeline.getPlayerTimeLine()) {
-				MSShape.RenderUIImage(Asset.UI_DARK, (i + 2) * MS,
+				MSShape.RenderUIImage(Asset.UI_DARK, (i + 3) * MS,
 						(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3.2,
 						MS, MS);
 			}
@@ -205,11 +216,11 @@ public class Game implements MSState {
 				}
 
 				if (!timeline.getPlayerTimeLine()) {
-					MSShape.RenderUIImage(_image, 2 * MS + TIME_NODE_SIZE * j + _bundle.startPosition * TIME_NODE_SIZE,
+					MSShape.RenderUIImage(_image, 3 * MS + TIME_NODE_SIZE * j + _bundle.startPosition * TIME_NODE_SIZE,
 							(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY,
 							3, MS, MS);
 				} else {
-					MSShape.RenderUIImage(_image, 2 * MS + TIME_NODE_SIZE * j + _bundle.startPosition * TIME_NODE_SIZE,
+					MSShape.RenderUIImage(_image, 3 * MS + TIME_NODE_SIZE * j + _bundle.startPosition * TIME_NODE_SIZE,
 							(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + MS / 3
 									+ timelineY,
 							3, MS, MS);
@@ -218,7 +229,7 @@ public class Game implements MSState {
 		}
 
 		if (!timeline.getPlayerTimeLine())
-			MSShape.RenderUIImage(Asset.UI_MARKER, 2 * MS + TIME_NODE_SIZE * (recordSystem.getTimer()),
+			MSShape.RenderUIImage(Asset.UI_MARKER, 3 * MS + TIME_NODE_SIZE * (recordSystem.getTimer()),
 					(MSDisplay.height - (MS / 2 * 3)) + (index - timelineScroll - (tLen - 1)) * MS + timelineY, 3.2, MS,
 					MS);
 	}
@@ -228,7 +239,7 @@ public class Game implements MSState {
 		int len = timelines.size();
 		if (len > 4)
 			len = 4;
-		int x = (2 + index) * MS;
+		int x = (3 + index) * MS;
 		int y = (MSDisplay.height - (MS / 2 * 3)) + (0 - (len)) * MS + MS / 3 * 2 + timelineY;
 
 		if (index == 0) {
@@ -286,7 +297,7 @@ public class Game implements MSState {
 			}
 
 			if (MSInput.keys[KeyEvent.VK_S]) {
-				if (timelineScroll + 3 < timelines.size() - 1)
+				if (timelineScroll < timelines.size() - 3 - 1)
 					timelineScroll++;
 
 				MSInput.keys[KeyEvent.VK_S] = false;
@@ -371,8 +382,9 @@ public class Game implements MSState {
 			_backupPlayerDied = true;
 		}
 
-		if (gameState == 0)
+		if (gameState == 0) {
 			recordSystem.changeRecording();
+		}
 
 		if (gameState == 1) {
 			recordSystem.run = false;
@@ -466,7 +478,7 @@ public class Game implements MSState {
 		if (turnTimer >= 1) {
 			turnTimer = 0;
 
-			if (!stage.cleared && recordSystem.run && playerPositionReset && this.awaitTimer >= 0.1)
+			if (!stage.cleared && recordSystem.run && this.awaitTimer >= 0.1)
 				Asset.WAV_MOVE.play();
 
 			if (recordSystem != null) {
@@ -484,21 +496,9 @@ public class Game implements MSState {
 
 		// 현재 노드에 따라 화면 구성하기 (리플레이)
 		if (gameState == 1 && recordSystem.run) {
-			for (int i = 0; i < timelines.size(); i++) {
-				TimeBundle _curBundle = timelines.get(i).getBundleByTime(recordSystem.getTimer());
-				TimeNode _curNode = null;
-
-				if (_curBundle != null) {
-					_curNode = _curBundle.getNodeByTime(recordSystem.getTimer());
-				}
-
-				if (_curNode != null) {
-					recordSystem.createPausedGame();
-				}
-			}
-
 			// 타이머 돌리기
 			recordSystem.runTimer();
+			recordSystem.createPausedGame();
 		}
 	}
 
@@ -530,9 +530,9 @@ public class Game implements MSState {
 	}
 
 	public void updateRecordTurn() {
+		replayTimer = recordSystem.getTimer();
 		if (recordSystem.isRecording()) {
-
-			if (gameState == 0 || (gameState == 1 && recordSystem.run)) {
+			if (gameState == 0) {
 				checkCollision();
 				checkTileCollision();
 			}
@@ -558,12 +558,16 @@ public class Game implements MSState {
 		if (gameState == 0) {
 			targetTimelineY = 400;
 		} else if (gameState == 1) {
-			if (recordSystem.run)
+			if (recordSystem.run) {
 				targetTimelineY = 400;
-			else
+			} else {
 				targetTimelineY = -20;
+			}
 		}
-
+		if(MSInput.keys[KeyEvent.VK_CONTROL]) {
+			targetTimelineY = 400;
+		}
+		
 		recordSystem.update();
 
 		if (stage.cleared)

@@ -36,10 +36,15 @@ public class MovementPad extends RObject {
 			if (_obj != null && _obj != this) {
 				if (MSMath.GetDistance(_obj.simulatedPosition, simulatedPosition) <= 2) {
 					if (switched) {
+
 						if (Main.game.recordSystem.run) {
 							if (MSMath.GetDistance(_obj.position, position) <= 2) {
-								// effect
-								Game.particles.add(new MovementParticle((int) position.GetX(), (int) position.GetY()));
+								if (Main.game.replayTimer == Main.game.recordSystem.getTimer()) {
+									// effect
+									for (int j = 0; j < (int) Math.round(Math.random() * 2) + 3; j++)
+										Game.particles.add(
+												new MovementParticle((int) position.GetX(), (int) position.GetY()));
+								}
 							}
 						}
 

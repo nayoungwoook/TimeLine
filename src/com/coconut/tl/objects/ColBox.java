@@ -28,7 +28,8 @@ public class ColBox {
 		if (Main.game.gameState == 1 && !Main.game.recordSystem.run)
 			return;
 
-		Game.particles.add(new DieParticle((int) effectPosition.GetX(), (int) effectPosition.GetY()));
+		for (int i = 0; i < (int) Math.round(Math.random() * 2) + 3; i++)
+			Game.particles.add(new DieParticle((int) effectPosition.GetX(), (int) effectPosition.GetY()));
 
 		Asset.WAV_DIE.play();
 	}
@@ -48,8 +49,8 @@ public class ColBox {
 			if (isCollision(_obj)) {
 				if (_obj != null && _obj.getClass() == Player.class) {
 					Main.game.playerDied = true;
-					Main.game.playerDiedPosition.SetTransform(Game.timelines.get(i).ownerObject.position.GetX(),
-							Game.timelines.get(i).ownerObject.position.GetY());
+					Main.game.playerDiedPosition.SetTransform(Game.timelines.get(i).ownerObject.targetPosition.GetX(),
+							Game.timelines.get(i).ownerObject.targetPosition.GetY());
 
 					if ((Main.game.gameState == 1 && Main.game.recordSystem.run) || Main.game.gameState == 0) {
 						effect(position);
@@ -62,7 +63,7 @@ public class ColBox {
 				if (_obj != null && _obj.getClass() == Rock.class) {
 					if (!_obj.destroyed && (Main.game.gameState == 1 && Main.game.recordSystem.run)
 							|| Main.game.gameState == 0) {
-						if (Main.game.recordSystem.getTimer() == Main.game.replayTimer) {
+						if (Main.game.replayTimer == Main.game.recordSystem.getTimer()) {
 							effect(position);
 						}
 					}

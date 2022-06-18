@@ -64,6 +64,17 @@ public class Asset {
 	public static final MSSprite UI_CURSOR[] = { new MSSprite("img/cursor.png").CutImage(0, 0, 16, 16),
 			new MSSprite("img/cursor.png").CutImage(16, 0, 16, 16), };
 
+	public static final MSSprite UI_NUMBERS[] = { new MSSprite("img/nums.png").CutImage(0, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16 * 2, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16 * 3, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16 * 4, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16 * 5, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16 * 6, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16 * 7, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16 * 8, 0, 16, 16),
+			new MSSprite("img/nums.png").CutImage(16 * 9, 0, 16, 16), };
+
 	public static final MSSprite UI_TRANSITION[] = { new MSSprite("img/transition.png").CutImage(0, 0, 24, 24),
 			new MSSprite("img/transition.png").CutImage(24 * 1, 0, 24, 24),
 			new MSSprite("img/transition.png").CutImage(24 * 2, 0, 24, 24),

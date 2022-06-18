@@ -36,7 +36,6 @@ public class RObject extends MSObject {
 	protected TimeLine timeline;
 	public boolean movementPad = false;
 	public boolean destroyed = false;
-//	private int index = -1;
 
 	public RObject(RObject.Directions direction, int x, int y, TimeLine timeline) {
 		super(x, y, Game.MS, Game.MS);
@@ -44,11 +43,6 @@ public class RObject extends MSObject {
 		this.timeline = timeline;
 		targetPosition = new MSTrans(x, y);
 		simulatedPosition = new MSTrans(x, y);
-		for (int i = 0; i < Game.timelines.size(); i++) {
-			if (timeline == Game.timelines.get(i)) {
-//				index = i;
-			}
-		}
 	}
 
 	@Override
@@ -106,12 +100,6 @@ public class RObject extends MSObject {
 					(int) position.GetY() - Game.MS / 3 * 2 - (int) (Math.sin(arrowTimer * 10) * 15), 2.5, Game.MS,
 					Game.MS);
 		}
-
-		if (MSInput.keys[KeyEvent.VK_CONTROL]) {
-			MSShape.SetColor(Color.white);
-			MSShape.SetFont(Asset.FONT[0]);
-			MSShape.RenderText("" + destroyed, (int) position.GetX(), (int) position.GetY() - Game.MS / 2, 3);
-		}
 	}
 
 	public void turn(RObject.Module dataType) {
@@ -142,8 +130,11 @@ public class RObject extends MSObject {
 
 				SetSize(Game.MS * 2, Game.MS / 3 * 2);
 
-				Game.particles.add(new DustParticle((int) position.GetX() + (int) Math.round(Math.random() * 20) - 10,
-						(int) position.GetY() + (int) Math.round(Math.random() * 20) - 10));
+				if (Main.game.replayTimer == Main.game.recordSystem.getTimer()) {
+					Game.particles
+							.add(new DustParticle((int) position.GetX() + (int) Math.round(Math.random() * 20) - 10,
+									(int) position.GetY() + (int) Math.round(Math.random() * 20) - 10));
+				}
 			}
 		}
 
