@@ -1,16 +1,16 @@
 package com.coconut.tl.objects;
 
-import java.awt.Color;
-
 import com.coconut.tl.Main;
+
 import com.coconut.tl.asset.Asset;
+import com.coconut.tl.effect.ClearParticle;
 import com.coconut.tl.effect.DustParticle;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
-import com.sun.glass.events.KeyEvent;
 
+import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.input.MSInput;
 import dev.suback.marshmallow.math.MSMath;
 import dev.suback.marshmallow.object.MSObject;
@@ -62,7 +62,32 @@ public class RObject extends MSObject {
 
 		position.Translate(_cxv, _cyv);
 
-		if (this.timeline.getLineIndex() == Main.game.selectedTimeLineIndx && Main.game.gameState == 1
+		if (!getClass().equals(Player.class)) {
+			int xx = (int) Math.abs(MSInput.mousePointer.GetX() - position.GetX());
+			int yy = (int) Math.abs(MSInput.mousePointer.GetY() + Game.MS / 3 - position.GetY());
+			if (xx <= Game.MS / 2 && yy <= Game.MS / 2) {
+				if (MSInput.mouseLeft) {
+					Main.game.timelineScroll = timeline.getLineIndex();
+
+					if (Main.game.timelineScroll < 0)
+						Main.game.timelineScroll = 0;
+
+					if (Main.game.timelineScroll > Game.timelines.size() - 3 - 1)
+						Main.game.timelineScroll = Game.timelines.size() - 3 - 1;
+
+					int xxx = Game.MS * 2;
+					int yyy = (MSDisplay.height - (Game.MS / 7 * 9) - Game.MS * 2
+							+ Game.MS * (timeline.getLineIndex() - Main.game.timelineScroll));
+
+					for (int i = 0; i < (int) Math.round(Math.random() * 5) + 3; i++)
+						Game.particles.add(new ClearParticle(xxx, yyy));
+
+					MSInput.mouseLeft = false;
+				}
+			}
+		}
+
+		if (this.timeline.getLineIndex() == Main.game.selectedTimeLineIndex && Main.game.gameState == 1
 				&& !Main.game.recordSystem.run) {
 			plusBir = 70;
 		} else {
@@ -94,7 +119,7 @@ public class RObject extends MSObject {
 	public void Render() {
 		super.Render();
 
-		if (Main.game.selectedTimeLineIndx == timeline.getLineIndex() && !Main.game.recordSystem.run
+		if (Main.game.selectedTimeLineIndex == timeline.getLineIndex() && !Main.game.recordSystem.run
 				&& Main.game.gameState == 1 && !(MSInput.mouseLeft || MSInput.mouseRight)) {
 			MSShape.RenderImage(Asset.UI_ARROW_MARKER, (int) position.GetX(),
 					(int) position.GetY() - Game.MS / 3 * 2 - (int) (Math.sin(arrowTimer * 10) * 15), 2.5, Game.MS,
@@ -123,18 +148,13 @@ public class RObject extends MSObject {
 			if (_bundle != null)
 				_node = _bundle.getNodeByTime(Main.game.recordSystem.getTimer());
 
-			if (!destroyed
-					&& (Main.game.gameState == 1 && Main.game.recordSystem.run && _node != null
-							&& (Main.game.recordSystem.getTimer() == Main.game.replayTimer))
-					|| Main.game.gameState == 0) {
+			if (!destroyed && (Main.game.gameState == 0 || (Main.game.gameState == 1 && Main.game.recordSystem.run
+					&& Main.game.replayTimer == Main.game.recordSystem.getTimer())) && _node != null) {
 
 				SetSize(Game.MS * 2, Game.MS / 3 * 2);
 
-				if (Main.game.replayTimer == Main.game.recordSystem.getTimer()) {
-					Game.particles
-							.add(new DustParticle((int) position.GetX() + (int) Math.round(Math.random() * 20) - 10,
-									(int) position.GetY() + (int) Math.round(Math.random() * 20) - 10));
-				}
+				Game.particles.add(new DustParticle((int) position.GetX() + (int) Math.round(Math.random() * 20) - 10,
+						(int) position.GetY() + (int) Math.round(Math.random() * 20) - 10));
 			}
 		}
 

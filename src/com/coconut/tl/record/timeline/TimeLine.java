@@ -142,11 +142,11 @@ public class TimeLine {
 		if (Math.abs(MSInput.mousePointer.GetY() - yy) <= Game.MS / 3) {
 
 			if (Main.game.getTimeLineScroll() <= lineIndex && Main.game.getTimeLineScroll() + 3 > lineIndex) {
-				Main.game.selectedTimeLineIndx = getLineIndex();
+				Main.game.selectedTimeLineIndex = getLineIndex();
 				if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 2
 						&& !Main.game.recordSystem.bundleSelected) {
 					if (MSInput.mouseLeft) {
-						if ((locked && Main.game.unlockedTimelineCount < 4) || !locked) {
+//						if ((locked && Main.game.unlockedTimelineCount < 4) || !locked) {
 							locked = !locked;
 							if (!locked) {
 								for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
@@ -168,7 +168,7 @@ public class TimeLine {
 						}
 						MSInput.mouseLeft = false;
 					}
-				}
+//				}
 			}
 		}
 	}

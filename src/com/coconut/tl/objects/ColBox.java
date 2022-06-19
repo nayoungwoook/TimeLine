@@ -61,8 +61,8 @@ public class ColBox {
 				}
 
 				if (_obj != null && _obj.getClass() == Rock.class) {
-					if (!_obj.destroyed && (Main.game.gameState == 1 && Main.game.recordSystem.run)
-							|| Main.game.gameState == 0) {
+					if (!_obj.destroyed
+							&& ((Main.game.gameState == 1 && Main.game.recordSystem.run) || Main.game.gameState == 0)) {
 						if (Main.game.replayTimer == Main.game.recordSystem.getTimer()) {
 							effect(position);
 						}

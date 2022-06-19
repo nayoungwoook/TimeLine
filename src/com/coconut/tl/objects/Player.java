@@ -1,6 +1,7 @@
 package com.coconut.tl.objects;
 
 import com.coconut.tl.Main;
+
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.ClearParticle;
 import com.coconut.tl.effect.DieParticle;
@@ -10,7 +11,6 @@ import com.coconut.tl.state.Game;
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.camera.MSCamera;
 import dev.suback.marshmallow.math.MSMath;
-import dev.suback.marshmallow.transform.MSTrans;
 
 public class Player extends RObject {
 
@@ -42,7 +42,10 @@ public class Player extends RObject {
 				Main.game.playerDie();
 		}
 
-		if (MSMath.GetDistance(Main.game.stage.clearPosition, position) <= 2) {
+		if (MSMath.GetDistance(Main.game.stage.clearPosition, position) >= Game.MS)
+			Main.game.reset = true;
+
+		if (Main.game.reset && MSMath.GetDistance(Main.game.stage.clearPosition, position) <= 2) {
 			if (!Main.game.stage.cleared && Main.game.recordSystem.run) {
 
 				Main.game.stage.cleared = true;

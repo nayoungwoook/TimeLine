@@ -22,6 +22,7 @@ import com.coconut.tl.stages.Stage;
 import com.coconut.tl.stages.Stage01;
 import com.coconut.tl.stages.Stage02;
 import com.coconut.tl.stages.Stage03;
+import com.coconut.tl.stages.Stage04;
 
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.camera.MSCamera;
@@ -50,7 +51,8 @@ public class Game implements MSState {
 	public MSSprite cursorImage;
 	public Stage stage;
 
-	public int selectedTimeLineIndx = -1;
+	public boolean reset = false;
+	public int selectedTimeLineIndex = -1;
 	public int cutCount = 0;
 
 	// 스테이트 전환후, 기다리는 타이머
@@ -89,6 +91,9 @@ public class Game implements MSState {
 			case 3:
 				stage = new Stage03(this);
 				break;
+			case 4:
+				stage = new Stage04(this);
+				break;
 			}
 		}
 	}
@@ -102,7 +107,7 @@ public class Game implements MSState {
 		recordSystem = new RecordSystem();
 
 		setStage(stageIndex);
-
+		
 		stage.stageStarted();
 
 		targetCPosition.SetZ(1.3);
@@ -110,7 +115,7 @@ public class Game implements MSState {
 
 	private int timelineY = 400;
 	public int targetTimelineY = 0;
-	private int timelineScroll = 0;
+	public int timelineScroll = 0;
 
 	public int getTimeLineScroll() {
 		return timelineScroll;
@@ -304,7 +309,9 @@ public class Game implements MSState {
 			}
 		}
 
-		renderTimeLine(timelines.get(0), timelineScroll);
+		if (timelines.size() > 0)
+			renderTimeLine(timelines.get(0), timelineScroll);
+
 		for (int i = 0; i < len - 1; i++) {
 			renderTimeLine(timelines.get(i + timelineScroll + 1), i + 1 + timelineScroll);
 		}
@@ -367,10 +374,6 @@ public class Game implements MSState {
 
 			MSShape.RenderText("stage select", MSDisplay.width / 2, y, 3);
 
-			for (int i = -2; i < 3; i++) {
-				if ((int) Math.round(Math.random() * 4) == 0)
-					particles.add(new ClearDust(MSDisplay.width / 2 + i * 100, MSDisplay.height / 2));
-			}
 		}
 	}
 
@@ -408,8 +411,9 @@ public class Game implements MSState {
 		for (int i = 0; i < particles.size(); i++)
 			particles.get(i).Render();
 
-//		for (int i = 0; i < stage.colboxes.size(); i++)
-//			stage.colboxes.get(i).render();
+		if (MSInput.keys[KeyEvent.VK_T])
+			for (int i = 0; i < stage.colboxes.size(); i++)
+				stage.colboxes.get(i).render();
 
 		for (int i = 0; i < timelines.size(); i++) {
 			if (timelines.get(i).ownerObject != null) {
@@ -495,7 +499,7 @@ public class Game implements MSState {
 	public void updateReplayTurn() {
 
 		// 현재 노드에 따라 화면 구성하기 (리플레이)
-		if (gameState == 1 && recordSystem.run) {
+		if (gameState == 1 && recordSystem.run && !stage.cleared) {
 			// 타이머 돌리기
 			recordSystem.runTimer();
 			recordSystem.createPausedGame();
@@ -555,6 +559,15 @@ public class Game implements MSState {
 
 	@Override
 	public void Update() {
+
+		if (stage.cleared && stage.clearTimer >= 1) {
+			timelines.clear();
+			for (int i = -2; i < 3; i++) {
+				if ((int) Math.round(Math.random()) == 0)
+					particles.add(new ClearDust(MSDisplay.width / 2 + i * 100, MSDisplay.height / 2));
+			}
+		}
+
 		if (gameState == 0) {
 			targetTimelineY = 400;
 		} else if (gameState == 1) {
@@ -564,10 +577,10 @@ public class Game implements MSState {
 				targetTimelineY = -20;
 			}
 		}
-		if(MSInput.keys[KeyEvent.VK_CONTROL]) {
+		if (MSInput.keys[KeyEvent.VK_CONTROL]) {
 			targetTimelineY = 400;
 		}
-		
+
 		recordSystem.update();
 
 		if (stage.cleared)
@@ -623,7 +636,7 @@ public class Game implements MSState {
 				timelines.get(i).ownerObject.Update();
 		}
 
-		selectedTimeLineIndx = -1;
+		selectedTimeLineIndex = -1;
 		for (int i = 0; i < timelines.size(); i++) {
 			timelines.get(i).update();
 			for (int j = 0; j < timelines.get(i).bundles.size(); j++) {

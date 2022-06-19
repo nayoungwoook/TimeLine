@@ -29,7 +29,7 @@ public class Rock extends RObject {
 	}
 
 	private boolean isCollision(RObject _obj) {
-		if (_obj != null) {
+		if (_obj != null && !_obj.destroyed) {
 			if (MSMath.GetDistance(simulatedPosition, _obj.simulatedPosition) <= Game.MS / 3) {
 				return true;
 			}
@@ -45,15 +45,16 @@ public class Rock extends RObject {
 				if (isCollision(_obj)) {
 
 					if (_obj.getClass().equals(Rock.class)) {
-						if (!_obj.destroyed && !destroyed && (Main.game.gameState == 1 && Main.game.recordSystem.run)
-								|| Main.game.gameState == 0) {
+						if (!_obj.destroyed && !destroyed) {
 							if (Main.game.replayTimer == Main.game.recordSystem.getTimer()) {
-								effect(this.position);
+								if ((Main.game.gameState == 1 && Main.game.recordSystem.run)
+										|| Main.game.gameState == 0) {
+									effect(this.position);
+								}
 							}
+							Game.timelines.get(i).ownerObject.destroyed = true;
+							timeline.ownerObject.destroyed = true;
 						}
-
-						Game.timelines.get(i).ownerObject.destroyed = true;
-						timeline.ownerObject.destroyed = true;
 					}
 
 					if (!destroyed && _obj.getClass().equals(Player.class)) {

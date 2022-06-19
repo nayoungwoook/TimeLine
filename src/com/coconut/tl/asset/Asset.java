@@ -166,9 +166,15 @@ public class Asset {
 	public static final MSSprite STAGE_SELECT[] = { new MSSprite("img/chapter1StageSelect.png"), };
 
 	public static final MSSprite STAGES[] = { new MSSprite("img/Stages/Stage01.png"),
-			new MSSprite("img/Stages/Stage02.png"), new MSSprite("img/Stages/Stage03.png"), };
+			new MSSprite("img/Stages/Stage02.png"),
+			new MSSprite("img/Stages/Stage03.png"), 
+			new MSSprite("img/Stages/Stage04.png"), 
+			new MSSprite("img/Stages/Stage05.png"), 
+			};
 
 	public static final MSSprite STAGE_COLS[] = { null, new MSSprite("img/Stages/Stage02Col.png"),
-			new MSSprite("img/Stages/Stage03Col.png"), };
+			new MSSprite("img/Stages/Stage03Col.png"), 
+			new MSSprite("img/Stages/Stage04Col.png"), 
+			};
 
 }

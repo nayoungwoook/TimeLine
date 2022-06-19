@@ -26,7 +26,6 @@ public class RecordSystem {
 	public void createPausedGame() {
 
 		Main.game.playerDied = false;
-
 		for (int j = 0; j < Game.timelines.size(); j++) {
 
 			if (Game.timelines.get(j).ownerObject != null) {
@@ -132,9 +131,9 @@ public class RecordSystem {
 				MSInput.keys[KeyEvent.VK_D] = false;
 			}
 
-		}
-		if (!run && !recording) {
-			createPausedGame();
+			if (!run && !recording) {
+				createPausedGame();
+			}
 		}
 
 		if (Math.abs(tempClickPos - timer) > 0 && MSInput.mouseRight) {
@@ -147,6 +146,7 @@ public class RecordSystem {
 			run = !run;
 			
 			Main.game.replayTimer = 0;
+			Main.game.reset = false;
 			
 			if (run) {
 				Main.game._backupPlayerDied = false;
