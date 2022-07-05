@@ -3,16 +3,16 @@ package com.coconut.tl.state;
 import java.awt.Color;
 import java.util.ArrayList;
 
-import com.coconut.tl.Main;
-import com.coconut.tl.asset.Asset;
-import com.coconut.tl.effect.transition.Transition;
-import com.sun.glass.events.KeyEvent;
-
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.input.MSInput;
 import dev.suback.marshmallow.object.MSObject;
 import dev.suback.marshmallow.object.shape.MSShape;
 import dev.suback.marshmallow.state.MSState;
+
+import com.coconut.tl.Main;
+import com.coconut.tl.asset.Asset;
+import com.coconut.tl.effect.transition.Transition;
+import com.sun.glass.events.KeyEvent;
 
 public class Title implements MSState {
 
@@ -67,9 +67,12 @@ public class Title implements MSState {
 		} else {
 			MSShape.SetColor(new Color(155, 155, 155));
 		}
-
-		MSShape.SetFont(Asset.FONT[2]);
-
+		
+		if (Main.setting.lang.equals("english"))
+			MSShape.SetFont(Asset.FONT[2]);
+		if (Main.setting.lang.equals("korean"))
+			MSShape.SetFont(Asset.KFONT[2]);
+		
 		String str = "";
 
 		if (btn == Buttons.START)

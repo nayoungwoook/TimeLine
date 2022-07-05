@@ -14,12 +14,11 @@ import com.sun.glass.events.KeyEvent;
 
 public class Setting implements MSState {
 
-	private boolean sound;
-	private String lang;
+	public boolean sound = true;
+	public String lang = "english";
 
 	@Override
 	public void Init() {
-
 	}
 
 	@Override
@@ -35,7 +34,12 @@ public class Setting implements MSState {
 				(int) MSInput.mousePointer.GetY(), 5, Game.MS, Game.MS);
 
 		MSShape.SetColor(new Color(255, 255, 255));
-		MSShape.SetFont(Asset.FONT[3]);
+
+		if (Main.setting.lang.equals("english"))
+			MSShape.SetFont(Asset.FONT[3]);
+		if (Main.setting.lang.equals("korean"))
+			MSShape.SetFont(Asset.KFONT[3]);
+
 		MSShape.RenderText("SETTING", MSDisplay.width / 2, 150, 3);
 
 		MSShape.SetColor(new Color(20, 20, 20, 150));
@@ -43,16 +47,20 @@ public class Setting implements MSState {
 
 		renderButton(BUTTON.SOUND);
 		renderButton(BUTTON.RESTART);
-		renderButton(BUTTON.LANG);
+		renderButton(BUTTON.TITLE);
 	}
 
 	private enum BUTTON {
-		SOUND, RESTART, LANG,
+		SOUND, RESTART, TITLE,
 	};
 
 	private void renderButton(BUTTON btn) {
 		MSShape.SetColor(new Color(200, 200, 200));
-		MSShape.SetFont(Asset.FONT[2]);
+
+		if (Main.setting.lang.equals("english"))
+			MSShape.SetFont(Asset.FONT[2]);
+		if (Main.setting.lang.equals("korean"))
+			MSShape.SetFont(Asset.KFONT[2]);
 
 		int buttonY = 0;
 		String buttonString = "";
@@ -68,9 +76,9 @@ public class Setting implements MSState {
 			buttonY = 390;
 		}
 
-		if (btn == BUTTON.LANG) {
-			buttonString = Main.langManager.langData.getJSONObject("SETTING_ELE").getString("LANG") + "ÇÑ±Û·Î";
-			buttonY = 390;
+		if (btn == BUTTON.TITLE) {
+			buttonString = Main.langManager.langData.getJSONObject("SETTING_ELE").getString("TITLE");
+			buttonY = 390 + 60;
 		}
 
 		if (Math.abs(MSInput.mousePointer.GetY() - buttonY + 15) <= 15) {
@@ -79,27 +87,36 @@ public class Setting implements MSState {
 			if (btn == BUTTON.SOUND) {
 				if (MSInput.mouseLeft) {
 					sound = !sound;
-
+					
+					if(sound)
+						Asset.WAV_UI.play();
+					
 					MSInput.mouseLeft = false;
 				}
 			}
 
-			if (btn == BUTTON.LANG) {
+			if (btn == BUTTON.TITLE) {
 				if (MSInput.mouseLeft) {
-					if (lang.equals("english"))
-						lang = "korean";
-					if (lang.equals("korean"))
-						lang = "english";
-
 					MSInput.mouseLeft = false;
+					
+					if(sound)
+						Asset.WAV_UI.play();
+					
+					Main.title = new Title();
+					MSState.SetState(Main.title);
 				}
 			}
 
 			if (btn == BUTTON.RESTART) {
-				buttonString = Main.langManager.langData.getJSONObject("SETTING_ELE").getString("RE");
-
 				if (MSInput.mouseLeft) {
 					MSInput.mouseLeft = false;
+					if(sound)
+						Asset.WAV_UI.play();
+					
+					buttonString = Main.langManager.langData.getJSONObject("SETTING_ELE").getString("RE");
+					
+					Main.game = new Game(Main.game.stageIndex, 1);
+					MSState.SetState(Main.game);
 				}
 			}
 		}

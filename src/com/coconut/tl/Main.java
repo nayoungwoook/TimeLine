@@ -21,23 +21,21 @@ public class Main {
 	public static Title title;
 	public static StageSelect select;
 	public static VideoSplash videoSplash;
-	public static Setting setting;
+	public static Setting setting = new Setting();
 	
 	public static LanguageManager langManager;
 
 	public static void main(String[] args) {
 		display = new MSDisplay("TimeLine - by Coconut (MarshMallow)", 1280, 720);
 		
+		langManager = new LanguageManager();
+		langManager.readLangFile("eng.txt");
+		
 		display.setBackground(Color.black);
 		display.pack();
 		MSDisplay.compo.setBackground(Color.black);
 		display.setCursor(display.getToolkit().createCustomCursor(new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB),
 				new Point(0, 0), "null"));
-
-		langManager = new LanguageManager();
-		langManager.readLangFile("eng.txt");
-		
-		setting = new Setting();
 		
 		videoSplash = new VideoSplash();
 		videoSplash.getVideo();

@@ -137,7 +137,9 @@ public class RecordSystem {
 				MSInput.keys[KeyEvent.VK_D] = false;
 			}
 
-			createPausedGame();
+			if(!Main.game.recordSystem.run) {
+				createPausedGame();
+			}
 		}
 
 		if (Math.abs(tempClickPos - timer) > 0 && MSInput.mouseRight) {

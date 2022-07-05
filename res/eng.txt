@@ -16,6 +16,6 @@
 	"SETTING_ELE" : {
 		"SOUND":"sound",
 		"RE":"Restart",
-		"LANG":"language",
+		"TITLE":"go back to title",
 	},
 }

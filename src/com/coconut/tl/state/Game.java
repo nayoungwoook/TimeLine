@@ -110,13 +110,13 @@ public class Game implements MSState {
 
 	@Override
 	public void Init() {
-		
+
 		if (firstGame)
 			return;
-		
+
 		targetCPosition.SetZ(1.3);
 		cursorImage = Asset.UI_CURSOR[0];
-		
+
 		firstGame = true;
 		stageStarted = false;
 		recordSystem = new RecordSystem();
@@ -286,7 +286,12 @@ public class Game implements MSState {
 		}
 
 		MSShape.SetColor(Color.white);
-		MSShape.SetFont(Asset.FONT[1]);
+
+		if (Main.setting.lang.equals("english"))
+			MSShape.SetFont(Asset.FONT[1]);
+		if (Main.setting.lang.equals("korean"))
+			MSShape.SetFont(Asset.KFONT[1]);
+
 		MSShape.RenderText("unlock timeline : " + this.unlockedTimelineCount + " / " + stage.maxunlock, 220,
 				-timelineY + 60, 4);
 
@@ -345,8 +350,13 @@ public class Game implements MSState {
 			MSShape.RenderRect(MSDisplay.width / 2, MSDisplay.height / 2, 4, MSDisplay.width * 2, MSDisplay.height * 2);
 
 			MSShape.SetColor(new Color(255, 255, 255));
-			MSShape.SetFont(Asset.FONT[2]);
 
+			if (Main.setting.lang.equals("english"))
+				MSShape.SetFont(Asset.FONT[2]);
+			if (Main.setting.lang.equals("korean"))
+				MSShape.SetFont(Asset.KFONT[2]);
+
+			
 			JSONObject obj = Main.langManager.langData;
 
 			MSShape.RenderText(obj.getJSONObject("STAGES").getString(stageIndex + ""), MSDisplay.width / 2,
@@ -366,8 +376,11 @@ public class Game implements MSState {
 
 			MSShape.RenderImage(Asset.UI_STAGE_CLEARED, MSDisplay.width / 2, MSDisplay.height / 2 + 5, 3, MS * 8, MS);
 
-			MSShape.SetFont(Asset.FONT[1]);
-
+			if (Main.setting.lang.equals("english"))
+				MSShape.SetFont(Asset.FONT[1]);
+			if (Main.setting.lang.equals("korean"))
+				MSShape.SetFont(Asset.KFONT[1]);
+			
 			int y = MSDisplay.height / 7 * 5;
 
 			if (Math.abs(y - MSInput.mousePointer.GetY() - 13) <= 15 && stageIndex + 1 <= 15) {
