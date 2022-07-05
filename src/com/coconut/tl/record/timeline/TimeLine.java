@@ -2,6 +2,10 @@ package com.coconut.tl.record.timeline;
 
 import java.util.ArrayList;
 
+import dev.suback.marshmallow.MSDisplay;
+import dev.suback.marshmallow.input.MSInput;
+import dev.suback.marshmallow.transform.MSTrans;
+
 import com.coconut.tl.Main;
 import com.coconut.tl.effect.ClearParticle;
 import com.coconut.tl.effect.DieParticle;
@@ -10,12 +14,9 @@ import com.coconut.tl.objects.RObject;
 import com.coconut.tl.objects.RObject.Directions;
 import com.coconut.tl.objects.Rock;
 import com.coconut.tl.objects.tile.DirectionPad;
+import com.coconut.tl.objects.tile.Hay;
 import com.coconut.tl.objects.tile.MovementPad;
 import com.coconut.tl.state.Game;
-
-import dev.suback.marshmallow.MSDisplay;
-import dev.suback.marshmallow.input.MSInput;
-import dev.suback.marshmallow.transform.MSTrans;
 
 public class TimeLine {
 
@@ -45,6 +46,7 @@ public class TimeLine {
 		this.startX = x;
 		this.startY = y;
 		this.object = object;
+		this.switched = true;
 
 		if (!playerTimeLine)
 			createOwnerObject(true);
@@ -91,6 +93,11 @@ public class TimeLine {
 			this.ownerObject = new Rock(startDir, startX, startY, this);
 			if (init)
 				createFullMoveNodes(RObject.Module.MOVE);
+		}
+		if (object.equals("hay")) {
+			this.ownerObject = new Hay(startDir, startX, startY, this);
+			if (init)
+				createFullMoveNodes(RObject.Module.NONE);
 		}
 		if (object.equals("directionpad")) {
 			this.ownerObject = new DirectionPad(startDir, startX, startY, this);
@@ -146,7 +153,7 @@ public class TimeLine {
 				if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 2
 						&& !Main.game.recordSystem.bundleSelected) {
 					if (MSInput.mouseLeft) {
-//						if ((locked && Main.game.unlockedTimelineCount < 4) || !locked) {
+						if ((locked && Main.game.unlockedTimelineCount < Main.game.stage.maxunlock) || !locked) {
 							locked = !locked;
 							if (!locked) {
 								for (int i = 0; i < 5 + (int) Math.round(Math.random() * 3); i++)
@@ -168,7 +175,7 @@ public class TimeLine {
 						}
 						MSInput.mouseLeft = false;
 					}
-//				}
+				}
 			}
 		}
 	}

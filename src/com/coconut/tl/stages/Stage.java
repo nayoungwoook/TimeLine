@@ -23,6 +23,8 @@ public class Stage {
 	public ArrayList<ColBox> colboxes = new ArrayList<>();
 	protected final int CONST_OF_TILE_X = MSDisplay.width / 2 - Game.MS * 24 / 2 + Game.MS / 2,
 			CONST_OF_TILE_Y = MSDisplay.height / 2 - Game.MS * 13 / 2 + Game.MS / 2;
+	public int maxunlock = 1;
+	public int maxcut = 1;
 
 	public Stage(Game game) {
 		this.game = game;

@@ -1,7 +1,6 @@
 package com.coconut.tl.objects.tile;
 
 import com.coconut.tl.Main;
-
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.DirectionParticle;
 import com.coconut.tl.objects.RObject;
@@ -40,7 +39,6 @@ public class DirectionPad extends RObject {
 						if (MSMath.GetDistance(_obj.position, position) <= 2) {
 							if (Main.game.recordSystem.run) {
 								if (Main.game.replayTimer == Main.game.recordSystem.getTimer()) {
-
 									// effect
 									for (int j = 0; j < (int) Math.round(Math.random() * 2) + 3; j++)
 										Game.particles.add(

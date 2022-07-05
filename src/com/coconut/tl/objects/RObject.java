@@ -1,7 +1,6 @@
 package com.coconut.tl.objects;
 
 import com.coconut.tl.Main;
-
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.ClearParticle;
 import com.coconut.tl.effect.DustParticle;
@@ -24,7 +23,7 @@ public class RObject extends MSObject {
 	};
 
 	public static enum Module {
-		MOVE, SWITCH
+		NONE, MOVE, SWITCH
 	}
 
 	protected int plusBir = 0;
@@ -67,22 +66,25 @@ public class RObject extends MSObject {
 			int yy = (int) Math.abs(MSInput.mousePointer.GetY() + Game.MS / 3 - position.GetY());
 			if (xx <= Game.MS / 2 && yy <= Game.MS / 2) {
 				if (MSInput.mouseLeft) {
-					Main.game.timelineScroll = timeline.getLineIndex();
 
-					if (Main.game.timelineScroll < 0)
-						Main.game.timelineScroll = 0;
+					if (Game.timelines.size() > 3) {
+						Main.game.timelineScroll = timeline.getLineIndex();
 
-					if (Main.game.timelineScroll > Game.timelines.size() - 3 - 1)
-						Main.game.timelineScroll = Game.timelines.size() - 3 - 1;
+						if (Main.game.timelineScroll < 0)
+							Main.game.timelineScroll = 0;
 
-					int xxx = Game.MS * 2;
-					int yyy = (MSDisplay.height - (Game.MS / 7 * 9) - Game.MS * 2
-							+ Game.MS * (timeline.getLineIndex() - Main.game.timelineScroll));
+						if (Main.game.timelineScroll > Game.timelines.size() - 3 - 1)
+							Main.game.timelineScroll = Game.timelines.size() - 3 - 1;
 
-					for (int i = 0; i < (int) Math.round(Math.random() * 5) + 3; i++)
-						Game.particles.add(new ClearParticle(xxx, yyy));
+						int xxx = Game.MS * 2;
+						int yyy = (MSDisplay.height - (Game.MS / 7 * 9) - Game.MS * 2
+								+ Game.MS * (timeline.getLineIndex() - Main.game.timelineScroll));
 
-					MSInput.mouseLeft = false;
+						for (int i = 0; i < (int) Math.round(Math.random() * 5) + 3; i++)
+							Game.particles.add(new ClearParticle(xxx, yyy));
+
+						MSInput.mouseLeft = false;
+					}
 				}
 			}
 		}
@@ -117,6 +119,8 @@ public class RObject extends MSObject {
 
 	@Override
 	public void Render() {
+		if (destroyed)
+			return;
 		super.Render();
 
 		if (Main.game.selectedTimeLineIndex == timeline.getLineIndex() && !Main.game.recordSystem.run
@@ -163,6 +167,8 @@ public class RObject extends MSObject {
 		}
 
 		simulatedPosition.SetTransform(targetPosition.GetX(), targetPosition.GetY());
+
+		Main.game.checkCollision();
 	}
 
 }

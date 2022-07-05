@@ -42,31 +42,11 @@ public class StageSelect implements MSState {
 			new MSTrans(Game.MS / 2 + 5 + (MSDisplay.width / 24) * 17,
 					Game.MS / 2 + 11 + (MSDisplay.width / 24 + 1) * 6), };
 
-	private int lockedOnMaxStageIndex = 0;
-	public boolean[] stageCleared = new boolean[5];
-
-	private void getLockedOnStageIndex() {
-		Main.saveLoader.readSaveFile();
-		JSONObject data = Main.saveLoader.saveData.getJSONObject("CLEAR");
-		for (int i = 0; i < data.length() - 1; i++) {
-			if (data.getBoolean((i + 1) + "")) {
-				stageCleared[i] = true;
-				if (i + 1 < stageCleared.length)
-					lockedOnMaxStageIndex = i + 1;
-			} else {
-				stageCleared[i] = false;
-			}
-		}
-
-	}
-
 	@Override
 	public void Init() {
 
 		transitions.clear();
 		particles.clear();
-
-		getLockedOnStageIndex();
 
 		for (int i = 0; i < 15; i++) {
 			for (int j = 0; j < 9; j++) {
@@ -92,17 +72,6 @@ public class StageSelect implements MSState {
 		MSShape.SetFont(Asset.FONT[1]);
 		MSShape.RenderText(obj.getString("PRESS_SPACE"), MSDisplay.width / 2, 130, 3);
 
-		for (int i = 0; i < stageCleared.length; i++) {
-			if (!stageCleared[i] && this.lockedOnMaxStageIndex != i) {
-				MSShape.SetColor(new Color(20, 20, 20, 220));
-				MSShape.RenderRect((int) waypoint[i].GetX(), (int) waypoint[i].GetY(), 2, Game.MS, Game.MS);
-			}
-
-			if (stageCleared[i])
-				MSShape.RenderImage(Asset.UI_CLEAR_MARKER, (int) waypoint[i].GetX(), (int) waypoint[i].GetY(), 2,
-						Game.MS, Game.MS);
-		}
-
 		for (int i = 0; i < particles.size(); i++)
 			particles.get(i).Render();
 
@@ -125,8 +94,8 @@ public class StageSelect implements MSState {
 				Game.MS);
 
 		// CURSOR
-		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX() + 15, (int) MSInput.mousePointer.GetY(),
-				10, 70, 70);
+		MSShape.RenderImage(Asset.UI_CURSOR[0], (int) MSInput.mousePointer.GetX() + 15,
+				(int) MSInput.mousePointer.GetY(), 10, 70, 70);
 	}
 
 	private double timer = 0;
@@ -142,10 +111,12 @@ public class StageSelect implements MSState {
 
 		if (MSInput.keys[KeyEvent.VK_A] && 295 < playerTargetPosition.GetX()) {
 			playerTargetPosition.Translate(MSDisplay.width / -24, 0);
+			Asset.WAV_MOVE.play();
 			MSInput.keys[KeyEvent.VK_A] = false;
 		}
 		if (MSInput.keys[KeyEvent.VK_D] && 930 > playerTargetPosition.GetX()) {
 			playerTargetPosition.Translate(MSDisplay.width / 24, 0);
+			Asset.WAV_MOVE.play();
 			MSInput.keys[KeyEvent.VK_D] = false;
 		}
 
@@ -154,6 +125,8 @@ public class StageSelect implements MSState {
 			for (int i = 0; i < 5 + (int) Math.round(Math.random() * 5); i++) {
 				particles.add(new ClearParticle((int) playerPosition.GetX(), (int) playerPosition.GetY()));
 			}
+
+			Asset.WAV_UI.play();
 
 			for (int i = 0; i < 15; i++) {
 				for (int j = 0; j < 9; j++) {

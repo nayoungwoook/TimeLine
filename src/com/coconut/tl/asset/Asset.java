@@ -26,6 +26,7 @@ public class Asset {
 			new MSSprite("img/tile.png").CutImage(16 * 15, 0, 16, 16), };
 
 	public static final MSSprite ROCK = new MSSprite("img/object.png").CutImage(0, 0, 16, 16);
+	public static final MSSprite HAY = new MSSprite("img/tile.png").CutImage(16 * 16, 0, 16, 16);
 
 	public static final MSSprite PLAYER = new MSSprite("img/player.png");
 
@@ -109,6 +110,12 @@ public class Asset {
 			new MSSprite("img/die_particle.png").CutImage(16 * 3, 0, 16, 16),
 			new MSSprite("img/die_particle.png").CutImage(16 * 4, 0, 16, 16), };
 
+	public static final MSSprite HAY_PARTICLE[] = { new MSSprite("img/hay_particle.png").CutImage(0, 0, 16, 16),
+			new MSSprite("img/hay_particle.png").CutImage(16, 0, 16, 16),
+			new MSSprite("img/hay_particle.png").CutImage(16 * 2, 0, 16, 16),
+			new MSSprite("img/hay_particle.png").CutImage(16 * 3, 0, 16, 16),
+			new MSSprite("img/hay_particle.png").CutImage(16 * 4, 0, 16, 16), };
+
 	public static final MSSprite DIRECTION_PAD_PARTICLE[] = { new MSSprite("img/padeffect.png").CutImage(0, 16, 16, 16),
 			new MSSprite("img/padeffect.png").CutImage(16, 16, 16, 16),
 			new MSSprite("img/padeffect.png").CutImage(16 * 2, 16, 16, 16),
@@ -146,10 +153,14 @@ public class Asset {
 	public static final Font FONT[] = { resource.GetFont("font.ttf", 15f), resource.GetFont("font.ttf", 30f),
 			resource.GetFont("font.ttf", 45f), resource.GetFont("font.ttf", 60), };
 
+	public static final Font KFONT[] = { resource.GetFont("kfont.ttf", 15f), resource.GetFont("kfont.ttf", 30f),
+			resource.GetFont("kfont.ttf", 45f), resource.GetFont("kfont.ttf", 60), };
+
 	public static final MSSound WAV_DIE = new MSSound("wav/die.wav");
 	public static final MSSound WAV_MOVE = new MSSound("wav/move.wav");
 	public static final MSSound WAV_UI_MOVE = new MSSound("wav/uimove.wav");
 	public static final MSSound WAV_BIG_PINK_COOKIE = new MSSound("wav/bigPinkCookie.wav");
+	public static final MSSound WAV_UI = new MSSound("wav/ui.wav");
 
 	public static final MSSprite TUTORIAL1[] = { new MSSprite("img/Stages/tutorial1.png").CutImage(0, 0, 384, 208),
 			new MSSprite("img/Stages/tutorial1.png").CutImage(384, 0, 384, 208),
@@ -166,15 +177,11 @@ public class Asset {
 	public static final MSSprite STAGE_SELECT[] = { new MSSprite("img/chapter1StageSelect.png"), };
 
 	public static final MSSprite STAGES[] = { new MSSprite("img/Stages/Stage01.png"),
-			new MSSprite("img/Stages/Stage02.png"),
-			new MSSprite("img/Stages/Stage03.png"), 
-			new MSSprite("img/Stages/Stage04.png"), 
-			new MSSprite("img/Stages/Stage05.png"), 
-			};
+			new MSSprite("img/Stages/Stage02.png"), new MSSprite("img/Stages/Stage03.png"),
+			new MSSprite("img/Stages/Stage04.png"), new MSSprite("img/Stages/Stage05.png"), };
 
 	public static final MSSprite STAGE_COLS[] = { null, new MSSprite("img/Stages/Stage02Col.png"),
-			new MSSprite("img/Stages/Stage03Col.png"), 
-			new MSSprite("img/Stages/Stage04Col.png"), 
-			};
+			new MSSprite("img/Stages/Stage03Col.png"), new MSSprite("img/Stages/Stage04Col.png"),
+			new MSSprite("img/Stages/stage05Col.png"), };
 
 }

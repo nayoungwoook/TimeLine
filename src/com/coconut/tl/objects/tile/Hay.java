@@ -1,20 +1,22 @@
-package com.coconut.tl.objects;
+package com.coconut.tl.objects.tile;
 
 import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
-import com.coconut.tl.effect.DieParticle;
+import com.coconut.tl.effect.HayParticle;
+import com.coconut.tl.objects.Player;
+import com.coconut.tl.objects.RObject;
+import com.coconut.tl.objects.Rock;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.state.Game;
 
 import dev.suback.marshmallow.math.MSMath;
 import dev.suback.marshmallow.transform.MSTrans;
 
-public class Rock extends RObject {
+public class Hay extends RObject {
 
-	public Rock(RObject.Directions direction, int x, int y, TimeLine timeline) {
+	public Hay(Directions direction, int x, int y, TimeLine timeline) {
 		super(direction, x, y, timeline);
-//		System.out.println((int) x + " | " + (int) y);
-		SetSprite(Asset.ROCK);
+		SetSprite(Asset.HAY);
 		position.SetZ(2);
 	}
 
@@ -23,14 +25,14 @@ public class Rock extends RObject {
 			return;
 
 		for (int i = 0; i < (int) Math.round(Math.random() * 2) + 3; i++)
-			Game.particles.add(new DieParticle((int) effectPosition.GetX(), (int) effectPosition.GetY()));
+			Game.particles.add(new HayParticle((int) effectPosition.GetX(), (int) effectPosition.GetY()));
 
 		Asset.WAV_DIE.play();
 	}
 
 	private boolean isCollision(RObject _obj) {
 		if (_obj != null && !_obj.destroyed) {
-			if (MSMath.GetDistance(simulatedPosition, _obj.simulatedPosition) < Game.MS) {
+			if (MSMath.GetDistance(simulatedPosition, _obj.simulatedPosition) <= Game.MS / 3) {
 				return true;
 			}
 		}

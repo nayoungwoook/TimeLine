@@ -2,11 +2,11 @@ package com.coconut.tl.record.timeline;
 
 import java.util.ArrayList;
 
-import com.coconut.tl.Main;
-import com.coconut.tl.state.Game;
-
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.input.MSInput;
+
+import com.coconut.tl.Main;
+import com.coconut.tl.state.Game;
 
 public class TimeBundle {
 
@@ -37,7 +37,7 @@ public class TimeBundle {
 	}
 
 	public void cutBundle() {
-		if (Main.game.cutCount > 2)
+		if (Main.game.cutCount >= Main.game.stage.maxcut)
 			return;
 
 		if (Main.game.lockedInput)

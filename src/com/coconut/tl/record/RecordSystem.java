@@ -2,13 +2,13 @@ package com.coconut.tl.record;
 
 import java.awt.event.KeyEvent;
 
+import dev.suback.marshmallow.input.MSInput;
+
 import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.record.timeline.TimeBundle;
 import com.coconut.tl.record.timeline.TimeNode;
 import com.coconut.tl.state.Game;
-
-import dev.suback.marshmallow.input.MSInput;
 
 public class RecordSystem {
 
@@ -39,7 +39,7 @@ public class RecordSystem {
 
 		for (int i = -1; i < timer + 1; i++) {
 			Main.game.replayTimer = i;
-			
+
 			Main.game.checkCollision();
 			Main.game.checkTileCollision();
 
@@ -66,8 +66,14 @@ public class RecordSystem {
 
 				if (_bundle == null) {
 					if (Game.timelines.get(j).getObject().equals("directionpad")
-							|| Game.timelines.get(j).getObject().equals("movementpad")) {
+							|| Game.timelines.get(j).getObject().equals("movementpad")
+							|| Game.timelines.get(j).getObject().equals("hay")) {
 						Game.timelines.get(j).createOwnerObject(false);
+					}
+
+					if (Game.timelines.get(j).getObject().equals("directionpad")
+							|| Game.timelines.get(j).getObject().equals("movementpad")) {
+						Game.timelines.get(j).ownerObject.switched = false;
 					}
 				}
 
@@ -117,7 +123,7 @@ public class RecordSystem {
 			timer = 0;
 		if (timer > 8 * (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3))
 			timer = 8 * (Main.game.stage.playerNodeSize * TIME_NODE_SIZE / Game.MS + 3);
-		
+
 		if (MSInput.mouseLeft || MSInput.mouseRight || MSInput.keys[KeyEvent.VK_D] || MSInput.keys[KeyEvent.VK_A]) {
 
 			if (MSInput.keys[KeyEvent.VK_A]) {
@@ -131,9 +137,7 @@ public class RecordSystem {
 				MSInput.keys[KeyEvent.VK_D] = false;
 			}
 
-			if (!run && !recording) {
-				createPausedGame();
-			}
+			createPausedGame();
 		}
 
 		if (Math.abs(tempClickPos - timer) > 0 && MSInput.mouseRight) {
@@ -144,10 +148,10 @@ public class RecordSystem {
 		if (MSInput.keys[KeyEvent.VK_SPACE] && Main.game.gameState == 1 && !Main.game.stage.cleared
 				&& !Main.game.lockedInput) {
 			run = !run;
-			
+
 			Main.game.replayTimer = 0;
 			Main.game.reset = false;
-			
+
 			if (run) {
 				Main.game._backupPlayerDied = false;
 				resetTimer();
@@ -182,7 +186,7 @@ public class RecordSystem {
 
 	public void changeRecording() {
 		recording = !recording;
-		
+
 		timer = 0;
 		if (!recording) {
 			Main.game.changeGameState(1);

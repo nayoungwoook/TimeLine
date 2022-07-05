@@ -9,6 +9,8 @@ public class Stage02 extends Stage {
 
 	public Stage02(Game game) {
 		super(game);
+
+		maxunlock = 3;
 		playerNodeSize = 34;
 		clearPosition.SetTransform(CONST_OF_TILE_X + Game.MS * 21, CONST_OF_TILE_Y + Game.MS * 10);
 		createColBoxes(Asset.STAGE_COLS[1].GetImage());

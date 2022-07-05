@@ -84,6 +84,8 @@ public class Title implements MSState {
 		if (MSInput.keys[KeyEvent.VK_SPACE]) {
 			if (btn == Buttons.START) {
 				if (transitions.size() == 0) {
+					Asset.WAV_UI.play();
+
 					for (int i = 0; i < 15; i++) {
 						for (int j = 0; j < 9; j++) {
 							transitions.add(
@@ -98,12 +100,10 @@ public class Title implements MSState {
 	@Override
 	public void Update() {
 
-		Main.display.pack();
-
 		if (MSInput.keys[KeyEvent.VK_B]) {
 
 			Asset.WAV_BIG_PINK_COOKIE.play();
-			
+
 			for (int i = 0; i < (int) Math.round(Math.random() * 3) + 2; i++)
 				bigPinkCookies.add(new BigPinkCookie(bigPinkCookies));
 			MSInput.keys[KeyEvent.VK_B] = false;
@@ -111,13 +111,14 @@ public class Title implements MSState {
 
 		if (MSInput.keys[KeyEvent.VK_W] && selection > 0) {
 			selection--;
+			Asset.WAV_UI.play();
 
 			MSInput.keys[KeyEvent.VK_W] = false;
 		}
 
 		if (MSInput.keys[KeyEvent.VK_S] && selection < 2) {
 			selection++;
-
+			Asset.WAV_UI.play();
 			MSInput.keys[KeyEvent.VK_S] = false;
 		}
 
@@ -152,10 +153,11 @@ class BigPinkCookie extends MSObject {
 		this.ar = ar;
 	}
 
+	@Override
 	public void Update() {
 		yv++;
 		xv += (0 - xv) / 10;
-		
+
 		if (position.GetY() >= MSDisplay.height + 100)
 			ar.remove(this);
 

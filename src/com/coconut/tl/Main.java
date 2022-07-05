@@ -1,16 +1,18 @@
 package com.coconut.tl;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.image.BufferedImage;
 
-import com.coconut.tl.lang.LanguageManager;
-import com.coconut.tl.state.Game;
-import com.coconut.tl.state.Loading;
-import com.coconut.tl.state.StageSelect;
-import com.coconut.tl.state.Title;
-
 import dev.suback.marshmallow.MSDisplay;
 import dev.suback.marshmallow.state.MSState;
+
+import com.coconut.tl.lang.LanguageManager;
+import com.coconut.tl.state.Game;
+import com.coconut.tl.state.Splash;
+import com.coconut.tl.state.StageSelect;
+import com.coconut.tl.state.Title;
+import com.coconut.tl.state.VideoSplash;
 
 public class Main {
 
@@ -18,20 +20,25 @@ public class Main {
 	public static Game game;
 	public static Title title;
 	public static StageSelect select;
-	public static Loading loading;
-	
-	public static SaveLoader saveLoader;
+	public static Splash splash;
+	public static VideoSplash videoSplash;
+
 	public static LanguageManager langManager;
 
 	public static void main(String[] args) {
 		display = new MSDisplay("TimeLine - by Coconut (MarshMallow)", 1280, 720);
-
-		loading = new Loading();
-//		Title title = new Title();
+		
+		display.setBackground(Color.black);
+		display.pack();
+		MSDisplay.compo.setBackground(Color.black);
 		display.setCursor(display.getToolkit().createCustomCursor(new BufferedImage(3, 3, BufferedImage.TYPE_INT_ARGB),
 				new Point(0, 0), "null"));
-		MSState.SetState(loading);
+		splash = new Splash();
+
+		videoSplash = new VideoSplash();
+		videoSplash.getVideo();
 		
+		MSState.SetState(splash);
 	}
 
 }

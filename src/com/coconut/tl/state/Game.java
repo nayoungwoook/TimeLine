@@ -1,9 +1,17 @@
 package com.coconut.tl.state;
 
 import java.awt.Color;
-
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+
+import dev.suback.marshmallow.MSDisplay;
+import dev.suback.marshmallow.camera.MSCamera;
+import dev.suback.marshmallow.image.MSSprite;
+import dev.suback.marshmallow.input.MSInput;
+import dev.suback.marshmallow.object.MSObject;
+import dev.suback.marshmallow.object.shape.MSShape;
+import dev.suback.marshmallow.state.MSState;
+import dev.suback.marshmallow.transform.MSTrans;
 
 import org.json.JSONObject;
 
@@ -13,6 +21,7 @@ import com.coconut.tl.effect.ClearDust;
 import com.coconut.tl.effect.transition.Transition;
 import com.coconut.tl.objects.Rock;
 import com.coconut.tl.objects.tile.DirectionPad;
+import com.coconut.tl.objects.tile.Hay;
 import com.coconut.tl.objects.tile.MovementPad;
 import com.coconut.tl.objects.tile.Tile;
 import com.coconut.tl.record.RecordSystem;
@@ -23,15 +32,7 @@ import com.coconut.tl.stages.Stage01;
 import com.coconut.tl.stages.Stage02;
 import com.coconut.tl.stages.Stage03;
 import com.coconut.tl.stages.Stage04;
-
-import dev.suback.marshmallow.MSDisplay;
-import dev.suback.marshmallow.camera.MSCamera;
-import dev.suback.marshmallow.image.MSSprite;
-import dev.suback.marshmallow.input.MSInput;
-import dev.suback.marshmallow.object.MSObject;
-import dev.suback.marshmallow.object.shape.MSShape;
-import dev.suback.marshmallow.state.MSState;
-import dev.suback.marshmallow.transform.MSTrans;
+import com.coconut.tl.stages.Stage05;
 
 public class Game implements MSState {
 
@@ -94,6 +95,9 @@ public class Game implements MSState {
 			case 4:
 				stage = new Stage04(this);
 				break;
+			case 5:
+				stage = new Stage05(this);
+				break;
 			}
 		}
 	}
@@ -107,7 +111,7 @@ public class Game implements MSState {
 		recordSystem = new RecordSystem();
 
 		setStage(stageIndex);
-		
+
 		stage.stageStarted();
 
 		targetCPosition.SetZ(1.3);
@@ -123,10 +127,9 @@ public class Game implements MSState {
 
 	private void renderNumber(int num, int x, int y) {
 		int i = 0, div = 1;
-		while ((int) (num / div) != 0) {
+		while (num / div != 0) {
 			i++;
-			MSShape.RenderUIImage(Asset.UI_NUMBERS[(int) (num / div % 10)], x + -(MS / 5 * 3) * (i - 3), y, 3.2, MS,
-					MS);
+			MSShape.RenderUIImage(Asset.UI_NUMBERS[num / div % 10], x + -(MS / 5 * 3) * (i - 3), y, 3.2, MS, MS);
 			div *= 10;
 		}
 	}
@@ -149,6 +152,9 @@ public class Game implements MSState {
 			MSSprite img = null;
 			if (timeline.getObject().equals("rock")) {
 				img = Asset.ROCK;
+			}
+			if (timeline.getObject().equals("hay")) {
+				img = Asset.HAY;
 			}
 			if (timeline.getObject().equals("directionpad")) {
 				img = Asset.DUNGEON_TILE[14];
@@ -270,6 +276,13 @@ public class Game implements MSState {
 					3, MS, MS);
 		}
 
+		MSShape.SetColor(Color.white);
+		MSShape.SetFont(Asset.FONT[1]);
+		MSShape.RenderText("unlock timeline : " + this.unlockedTimelineCount + " / " + stage.maxunlock, 220,
+				-timelineY + 60, 4);
+
+		MSShape.RenderText("cut count : " + this.cutCount + " / " + stage.maxcut, 220, -timelineY + 80, 4);
+
 		// BUTTON
 		if (renderTimeLineButton(0)) {
 			recordSystem.run = !recordSystem.run;
@@ -348,8 +361,14 @@ public class Game implements MSState {
 			if (Math.abs(y - MSInput.mousePointer.GetY() - 13) <= 15 && stageIndex + 1 <= 15) {
 				MSShape.SetColor(new Color(255, 255, 255));
 				if (MSInput.mouseLeft && transitions.size() == 0) {
-					Main.game = new Game(stageIndex + 1, 1);
-					MSState.SetState(Main.game);
+					if (stageIndex != 5) {
+						Main.game = new Game(stageIndex + 1, 1);
+						MSState.SetState(Main.game);
+					}
+
+					if (stageIndex == 5) {
+
+					}
 
 					MSInput.mouseLeft = false;
 				}
@@ -357,7 +376,10 @@ public class Game implements MSState {
 				MSShape.SetColor(new Color(155, 155, 155));
 			}
 
-			MSShape.RenderText("next stage", MSDisplay.width / 2, y, 3);
+			if (stageIndex != 5)
+				MSShape.RenderText("next stage", MSDisplay.width / 2, y, 3);
+			else
+				MSShape.RenderText("next stage ?", MSDisplay.width / 2, y, 3);
 
 			y = MSDisplay.height / 7 * 5 + 40;
 			if (Math.abs(y - MSInput.mousePointer.GetY() - 13) <= 15) {
@@ -530,6 +552,10 @@ public class Game implements MSState {
 					&& Game.timelines.get(a).ownerObject.getClass() == Rock.class) {
 				((Rock) Game.timelines.get(a).ownerObject).checkInGameCollision();
 			}
+			if (Game.timelines.get(a).ownerObject != null
+					&& Game.timelines.get(a).ownerObject.getClass() == Hay.class) {
+				((Hay) Game.timelines.get(a).ownerObject).checkInGameCollision();
+			}
 		}
 	}
 
@@ -592,10 +618,6 @@ public class Game implements MSState {
 			cursorImage = Asset.UI_CURSOR[1];
 
 		timelineY += (targetTimelineY - timelineY) / 20;
-
-		if (MSInput.keys[KeyEvent.VK_S] && MSInput.keys[KeyEvent.VK_CONTROL]) {
-			Main.saveLoader.writeSaveFile();
-		}
 
 		if (MSInput.keys[KeyEvent.VK_SPACE] && !stageStarted) {
 

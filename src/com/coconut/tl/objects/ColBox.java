@@ -36,7 +36,7 @@ public class ColBox {
 
 	private boolean isCollision(RObject _obj) {
 		if (_obj != null) {
-			if (MSMath.GetDistance(position, _obj.targetPosition) <= Game.MS / 3)
+			if (MSMath.GetDistance(position, _obj.targetPosition) < Game.MS)
 				return true;
 		}
 		return false;

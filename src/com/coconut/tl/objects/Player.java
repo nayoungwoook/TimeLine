@@ -1,16 +1,15 @@
 package com.coconut.tl.objects;
 
-import com.coconut.tl.Main;
+import dev.suback.marshmallow.MSDisplay;
+import dev.suback.marshmallow.camera.MSCamera;
+import dev.suback.marshmallow.math.MSMath;
 
+import com.coconut.tl.Main;
 import com.coconut.tl.asset.Asset;
 import com.coconut.tl.effect.ClearParticle;
 import com.coconut.tl.effect.DieParticle;
 import com.coconut.tl.record.timeline.TimeLine;
 import com.coconut.tl.state.Game;
-
-import dev.suback.marshmallow.MSDisplay;
-import dev.suback.marshmallow.camera.MSCamera;
-import dev.suback.marshmallow.math.MSMath;
 
 public class Player extends RObject {
 
@@ -24,14 +23,14 @@ public class Player extends RObject {
 	public void Update() {
 		super.Update();
 
+		
 		if (position.GetY() < 0 || position.GetY() > MSDisplay.height || position.GetX() < 0
-				|| position.GetX() > MSDisplay.width) {
+				|| position.GetX() > MSDisplay.width || Main.game.stage.playerNodeSize < Main.game.recordSystem.getTimer()) {
 			timeline.ownerObject = null;
 			if (Main.game.recordSystem.run) {
 				for (int j = 0; j < (int) Math.round(Math.random() * 5) + 5; j++) {
 					Game.particles.add(new DieParticle((int) simulatedPosition.GetX(), (int) simulatedPosition.GetY()));
 				}
-
 				Asset.WAV_DIE.play();
 			}
 
@@ -49,9 +48,6 @@ public class Player extends RObject {
 			if (!Main.game.stage.cleared && Main.game.recordSystem.run) {
 
 				Main.game.stage.cleared = true;
-
-				Main.saveLoader.saveData.getJSONObject("CLEAR").put(Main.game.stageIndex + "", true);
-				Main.saveLoader.writeSaveFile();
 
 				MSCamera.position.Translate((int) Math.round(Math.random() * 30) - 15,
 						(int) Math.round(Math.random() * 30) - 15, 0.1);
