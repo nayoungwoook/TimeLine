@@ -23,7 +23,7 @@ public class VideoSplash implements MSState {
 
 	@Override
 	public void Init() {
-
+		
 		MSDisplay.compo.setBackground(new Color(0, 0, 0));
 		player.play();
 		VFXPanel.setScene(scene);

@@ -107,7 +107,7 @@ public class RecordSystem {
 		}
 
 		int clickPos = (int) (MSInput.mousePointer.GetX() - Game.MS / 2 * 3 - Game.MS) / TIME_NODE_SIZE;
-		if (MSInput.mouseRight) {
+		if (MSInput.mouseRight && !Main.game.lockedInput) {
 			if (!run && !recording) {
 				markerSelected = true;
 			}
@@ -116,7 +116,7 @@ public class RecordSystem {
 		if (!MSInput.mouseRight)
 			markerSelected = false;
 
-		if (markerSelected)
+		if (markerSelected && !Main.game.lockedInput)
 			timer = clickPos + 1;
 
 		if (timer < 0)
@@ -126,12 +126,12 @@ public class RecordSystem {
 
 		if (MSInput.mouseLeft || MSInput.mouseRight || MSInput.keys[KeyEvent.VK_D] || MSInput.keys[KeyEvent.VK_A]) {
 
-			if (MSInput.keys[KeyEvent.VK_A]) {
+			if (MSInput.keys[KeyEvent.VK_A] && !Main.game.lockedInput) {
 				Asset.WAV_UI_MOVE.play();
 				timer--;
 				MSInput.keys[KeyEvent.VK_A] = false;
 			}
-			if (MSInput.keys[KeyEvent.VK_D]) {
+			if (MSInput.keys[KeyEvent.VK_D] && !Main.game.lockedInput) {
 				Asset.WAV_UI_MOVE.play();
 				timer++;
 				MSInput.keys[KeyEvent.VK_D] = false;
@@ -146,7 +146,7 @@ public class RecordSystem {
 		}
 
 		if (MSInput.keys[KeyEvent.VK_SPACE] && Main.game.gameState == 1 && !Main.game.stage.cleared
-				&& !Main.game.lockedInput) {
+				&& !Main.game.lockedInput && !Main.game.lockedInput) {
 			run = !run;
 
 			Main.game.replayTimer = 0;

@@ -15,7 +15,6 @@ public class LanguageManager {
 		int index = 0;
 
 		try {
-			
 			while ((index = is.read()) != -1) {
 				_read += (char) index;
 			}
@@ -24,7 +23,6 @@ public class LanguageManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 		langData = new JSONObject(_read);
 	}
  

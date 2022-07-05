@@ -59,6 +59,8 @@ public class Game implements MSState {
 	// 스테이트 전환후, 기다리는 타이머
 	private double awaitTimer = 0;
 
+	public boolean escSetting = false;
+
 	public boolean _backupPlayerDied = false;
 
 	public boolean playerDied = false;
@@ -69,6 +71,8 @@ public class Game implements MSState {
 
 	public int unlockedTimelineCount = 0;
 	public boolean lockedInput = false;
+
+	public double replaySpeed = 1;
 
 	public Game(int stageIndex, int chapter) {
 		this.stageIndex = stageIndex;
@@ -102,19 +106,24 @@ public class Game implements MSState {
 		}
 	}
 
+	public boolean firstGame = false;
+
 	@Override
 	public void Init() {
-
-		stageStarted = false;
+		
+		if (firstGame)
+			return;
+		
+		targetCPosition.SetZ(1.3);
 		cursorImage = Asset.UI_CURSOR[0];
-
+		
+		firstGame = true;
+		stageStarted = false;
 		recordSystem = new RecordSystem();
 
 		setStage(stageIndex);
-
 		stage.stageStarted();
 
-		targetCPosition.SetZ(1.3);
 	}
 
 	private int timelineY = 400;
@@ -266,7 +275,7 @@ public class Game implements MSState {
 		}
 
 		return Math.abs(MSInput.mousePointer.GetX() - x) / 2 <= MS / 5
-				&& Math.abs(MSInput.mousePointer.GetY() - y) / 2 <= MS / 5 && MSInput.mouseLeft;
+				&& Math.abs(MSInput.mousePointer.GetY() - y) / 2 <= MS / 5 && MSInput.mouseLeft && !this.lockedInput;
 	}
 
 	private void renderUi() {
@@ -282,6 +291,8 @@ public class Game implements MSState {
 				-timelineY + 60, 4);
 
 		MSShape.RenderText("cut count : " + this.cutCount + " / " + stage.maxcut, 220, -timelineY + 80, 4);
+
+		MSShape.RenderText("x" + replaySpeed, 220, -timelineY + 100, 4);
 
 		// BUTTON
 		if (renderTimeLineButton(0)) {
@@ -358,6 +369,7 @@ public class Game implements MSState {
 			MSShape.SetFont(Asset.FONT[1]);
 
 			int y = MSDisplay.height / 7 * 5;
+
 			if (Math.abs(y - MSInput.mousePointer.GetY() - 13) <= 15 && stageIndex + 1 <= 15) {
 				MSShape.SetColor(new Color(255, 255, 255));
 				if (MSInput.mouseLeft && transitions.size() == 0) {
@@ -395,7 +407,11 @@ public class Game implements MSState {
 			}
 
 			MSShape.RenderText("stage select", MSDisplay.width / 2, y, 3);
+		}
 
+		lockedInput = escSetting;
+		if (escSetting) {
+			MSState.SetState(new Setting());
 		}
 	}
 
@@ -500,7 +516,7 @@ public class Game implements MSState {
 
 	private void updateTurn() {
 
-		turnTimer += turnSpeed;
+		turnTimer += turnSpeed * replaySpeed;
 		if (turnTimer >= 1) {
 			turnTimer = 0;
 
@@ -519,7 +535,6 @@ public class Game implements MSState {
 	public int replayTimer = 0;
 
 	public void updateReplayTurn() {
-
 		// 현재 노드에 따라 화면 구성하기 (리플레이)
 		if (gameState == 1 && recordSystem.run && !stage.cleared) {
 			// 타이머 돌리기
@@ -585,6 +600,33 @@ public class Game implements MSState {
 
 	@Override
 	public void Update() {
+
+		if (MSInput.keys[KeyEvent.VK_ESCAPE]) {
+
+			escSetting = !escSetting;
+
+			if (escSetting && (stage.cleared || recordSystem.run))
+				escSetting = false;
+
+			MSInput.keys[KeyEvent.VK_ESCAPE] = false;
+		}
+
+		if (MSInput.keys[KeyEvent.VK_E] && !Main.game.lockedInput) {
+			this.replaySpeed += 0.5;
+			if (this.replaySpeed > 3)
+				this.replaySpeed = 3;
+
+			MSInput.keys[KeyEvent.VK_E] = false;
+		}
+
+		if (MSInput.keys[KeyEvent.VK_Q] && !Main.game.lockedInput) {
+
+			this.replaySpeed -= 0.5;
+			if (this.replaySpeed < 0.5)
+				this.replaySpeed = 0.5;
+
+			MSInput.keys[KeyEvent.VK_Q] = false;
+		}
 
 		if (stage.cleared && stage.clearTimer >= 1) {
 			timelines.clear();

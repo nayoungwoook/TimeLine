@@ -152,7 +152,7 @@ public class TimeLine {
 				Main.game.selectedTimeLineIndex = getLineIndex();
 				if (Math.abs(MSInput.mousePointer.GetX() - xx) <= Game.MS / 2
 						&& !Main.game.recordSystem.bundleSelected) {
-					if (MSInput.mouseLeft) {
+					if (MSInput.mouseLeft && !Main.game.lockedInput) {
 						if ((locked && Main.game.unlockedTimelineCount < Main.game.stage.maxunlock) || !locked) {
 							locked = !locked;
 							if (!locked) {
